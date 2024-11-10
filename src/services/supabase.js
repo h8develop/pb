@@ -2,9 +2,11 @@ import { createClient } from '@supabase/supabase-js'
 
 // DB = tNPnWxdIfnvMI3jC
 
-const SUPABASE_URL = 'https://gtcqgcjnvurdbaqstryi.supabase.co'
+const SUPABASE_URL = 'https://irymwiidzovsezjnbiux.supabase.co'
 const SUPABASE_API_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0Y3FnY2pudnVyZGJhcXN0cnlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgzNzczNTksImV4cCI6MjA0Mzk1MzM1OX0.edcCD2797-oPnheJBCPK-GdiN3OM0SbNg5T21wL0Bqw'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyeW13aWlkem92c2V6am5iaXV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzExNTg5MzAsImV4cCI6MjA0NjczNDkzMH0.xbnP-Dp5AeBSAa_hiPWpk3Lv1Dftc1J57kEtv2i9odc'
+  
+  
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_API_KEY)
 export default supabase
