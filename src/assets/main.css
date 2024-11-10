@@ -4,19 +4,19 @@
   box-sizing: border-box;
 }
 
-html,
-body {
+html,body {
+  font-family: 'Poppins', sans-serif;
   margin: 0;
   height: 100%;
   padding: 0;
   width: 100%;
   display: flex;
   justify-content: center;
-  background-color: #1c1f24;
+  background: linear-gradient(180deg, #000000 0.3%, #ff8c00 50%, #ffdd57 100%); 
   overflow-y: hidden;
   overflow-x: hidden;
+  color: #fff; /* Устанавливаем цвет текста */
 }
-
 .header {
   display: flex;
   align-items: center;
@@ -31,12 +31,10 @@ body {
 }
 
 .score {
-  color: #fff;
-  text-align: center;
   font-size: 36px;
-  font-weight: 800;
-  user-select: none;
+  font-weight: bold;
 }
+
 
 .circle {
   position: relative;
@@ -75,9 +73,9 @@ body {
   user-select: none;
   animation: move-up 2s forwards;
 }
-/* === NEW === */
+/*МЕНЮЮЮЮЮЮЮЮЮ*/
 .menu {
-  background: #2a292e;
+  background: rgba(42, 41, 46, 0.3); /* Полупрозрачный фон */
   display: flex;
   align-items: center;
   position: absolute;
@@ -91,16 +89,24 @@ body {
 }
 
 .menu-button {
-  color: #4e4d52;
+  color: #ffffff; /* Белый цвет текста */
   cursor: pointer;
-  transition: color 0.3s;
+  padding: 8px 15px; /* Уменьшенные отступы для меньшего фона */
+  flex: 1; /* Равное распределение кнопок по ширине */
+  text-align: center; /* Центрируем текст и иконки */
+  border-radius: 8px; /* Немного уменьшили закругление углов */
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.menu-button:hover,
-.menu-button.active {
-  color: #fff;
-  cursor: pointer;
+.menu-button:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Лёгкий фон при наведении */
 }
+
+.menu-button.active {
+  background-color: rgba(255, 255, 255, 0.15); /* Полупрозрачный белый фон для активной вкладки */
+  color: #ffffff; /* Цвет текста остаётся белым */
+}
+
 /* === /NEW === */
 
 @keyframes move-up {
@@ -209,4 +215,137 @@ body {
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
+}
+/* мои изменения в ксс идут отсюда */
+.earnings {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.earnings p {
+  display: inline; /* Делаем текстовым элементом в строке */
+  white-space: nowrap; /* Убираем перенос текста на новую строку */
+  font-size: 15px; /* Настроим размер шрифта по необходимости */
+}
+
+
+
+/* Стили для счетчика тапов */
+.tap-counter {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #fff;
+  margin-top: 10px;
+}
+
+.tap-icon {
+  width: 24px; /* Ширина изображения */
+  height: 24px; /* Высота изображения */
+  margin-right: 8px; /* Отступ справа от изображения */
+}
+
+.home-container {
+  text-align: center;
+  padding: 20px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; /* Расстояние между элементами */
+}
+
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+.username {
+  font-size: 14px;
+  margin-right: 50px;
+}
+
+.bot-title {
+  font-size: 30px;
+  font-weight: bold;
+  flex-grow: 1; /* Расширяет заголовок, чтобы он был по центру */
+  text-align: center;
+
+}
+
+.contest-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 20px;
+  margin-left:366px
+}
+
+.contest-image {
+  width: 100%;
+  max-width: 35px; /* Максимальная ширина изображения */
+  border-radius: 10px;
+}
+
+.timer {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #ffdd57; /* Цвет таймера */
+}
+
+.valuta-icon {
+  width: 40px; /* Настройте размер иконки */
+  height: 40px;
+  margin-bottom: 5px; /* Отступ снизу, чтобы отделить от текста */
+}
+
+
+.earning-item {
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.close-button {
+  background-color: #f0a500;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
 }

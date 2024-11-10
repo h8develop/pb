@@ -1,64 +1,76 @@
-import { defineStore } from 'pinia'
-import debounce from 'lodash.debounce'
-import { updateScore } from '@/api/app'
+import { defineStore } from 'pinia';
+import debounce from 'lodash.debounce';
+import { updateIncomeWithReferral } from '@/api/app'; // Импортируем функцию начисления дохода
 
-const debouncedUpdateScore = debounce(updateScore, 500)
-
-// const debounced = debounce((score) => {
-//   console.log('score', score)
-// }, 500)
-
-const baseLevelScore = 25
-
-// [25, 50, 100]
-const levels = new Array(15)
-  .fill(0)
-  .map((_, i) => baseLevelScore * Math.pow(2, i))
-
-const levelScores = levels.map((_, level) => {
-  let sum = 0
-
-  for (let [index, value] of levels.entries()) {
-    if (index >= level) {
-      return sum + value
-    }
-    sum += value
-  }
-
-  return sum
-})
-
-function computeLevelByScore(score) {
-  for (let [index, value] of levelScores.entries()) {
-    if (score <= value) {
-      return {
-        level: index,
-        value: levels[index],
-      }
-    }
-  }
-}
+const debouncedUpdateScore = debounce(updateIncomeWithReferral, 500);
 
 export const useScoreStore = defineStore('score', {
   state: () => ({
-    score: 0,
+    score: parseInt(localStorage.getItem('score')) || 0, // Счёт
+    energy: parseInt(localStorage.getItem('energy')) || 1000, // Энергия
+    maxEnergy: 1000, // Максимальная энергия
+    taps: parseInt(localStorage.getItem('taps')) || 0, // Количество тапов
+    maxTaps: 1000, // Максимальное количество тапов
+    tapEarnings: 1, // Очки за один тап
+    lastEnergyUpdate: parseInt(localStorage.getItem('lastEnergyUpdate')) || Date.now(), // Время последнего восстановления энергии
   }),
   getters: {
-    level: (state) => computeLevelByScore(state.score),
-    currentScore(state) {
-      if (this.level.level === 0) {
-        return state.score
-      }
-      return state.score - levelScores[this.level.level - 1]
-    },
+    currentScore: (state) => state.score, // Возвращаем текущий счёт
   },
   actions: {
+    // Добавляем очки при клике, если есть энергия
     add(score = 1) {
-      this.score += score
-      debouncedUpdateScore(this.score)
+      if (this.energy > 0) {
+        this.score += this.tapEarnings;
+        this.energy -= 1;
+        this.taps += 1;
+        debouncedUpdateScore(this.score); // Обновляем счёт с задержкой
+        this.saveState();
+      } else {
+        alert("У вас закончилась энергия!");
+      }
     },
+
+    // Устанавливаем новый счёт
     setScore(score) {
-      this.score = score
+      this.score = score;
+      this.saveState();
+    },
+
+    // Восстанавливаем всю энергию
+    restoreEnergy() {
+      this.energy = this.maxEnergy;
+      this.saveState();
+    },
+
+    // Восстанавливаем энергию с течением времени
+    restoreEnergyOverTime() {
+      const currentTime = Date.now();
+      const timeDiff = currentTime - this.lastEnergyUpdate;
+      const energyToRestore = Math.floor(timeDiff / (1000 * 60)); // Восстановление 1 единицы энергии каждую минуту
+
+      if (energyToRestore > 0) {
+        this.energy = Math.min(this.energy + energyToRestore, this.maxEnergy);
+        this.lastEnergyUpdate = currentTime;
+        this.saveState();
+      }
+    },
+
+    // Сохраняем состояние в localStorage
+    saveState() {
+      localStorage.setItem('score', this.score);
+      localStorage.setItem('energy', this.energy);
+      localStorage.setItem('taps', this.taps);
+      localStorage.setItem('lastEnergyUpdate', this.lastEnergyUpdate);
+    },
+
+    // Загружаем состояние из localStorage и восстанавливаем энергию
+    loadState() {
+      this.score = parseInt(localStorage.getItem('score')) || 0;
+      this.energy = parseInt(localStorage.getItem('energy')) || this.maxEnergy;
+      this.taps = parseInt(localStorage.getItem('taps')) || 0;
+      this.lastEnergyUpdate = parseInt(localStorage.getItem('lastEnergyUpdate')) || Date.now();
+      this.restoreEnergyOverTime();
     },
   },
-})
+});

@@ -1,12 +1,12 @@
 <template>
   <div class="text-content">
-    <h1>Your Friends</h1>
+    <h1>Друзья</h1>
 
     <div class="center">
       <button class="referal" @click="copy">{{ referalText }}</button>
     </div>
 
-    <h3 v-if="friends.length === 0">No friends yet</h3>
+    <h3 v-if="friends.length === 0">Поделись ссылкой с друзьями и получи 20% с их дохода</h3>
 
     <ul class="list">
       <li class="list-item" v-for="friend in friends" :key="friend.id">
