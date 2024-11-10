@@ -31,7 +31,7 @@
 
     <!-- Счетчик кликов -->
     <div class="tap-counter">
-      <img src="../assets/white_coin_energy.png" alt="Icon" class="tap-icon" />
+      <img src="/src/assets/white_coin_energy.png" alt="Icon" class="tap-icon" />
       <p>{{ scoreStore.energy }} / {{ scoreStore.maxEnergy }}</p>
     </div>
 
@@ -45,7 +45,7 @@
 
     <!-- Иконка ежедневных миссий -->
     <div class="daily-icon" @click="openDailyMissions">
-      <img src="../assets/daily-icon.png" alt="Daily Missions" />
+      <img src="" alt="Daily Missions" />
     </div>
 
     <!-- Модальное окно для ежедневных миссий -->
