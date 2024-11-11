@@ -24,7 +24,7 @@ export const useAppStore = defineStore('app', {
       score.setScore(this.user.score)
 
       if (ref && +ref !== +this.user.telegram) {
-        await registerRef(user?.first_name ?? 'Lizard God', ref)
+        await registerRef(user?.first_name ?? 'kto', ref)
       }
     },
     async completeTask(task) {

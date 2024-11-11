@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import debounce from 'lodash.debounce';
-import { updateIncomeWithReferral } from '@/api/app'; // Импортируем функцию начисления дохода
+import { updateIncomeWithReferral } from '@/api/app';
+import { updateScore } from '@/api/app';
+
 
 const debouncedUpdateScore = debounce(updateIncomeWithReferral, 500);
 
@@ -19,23 +21,26 @@ export const useScoreStore = defineStore('score', {
   },
   actions: {
     // Добавляем очки при клике, если есть энергия
-    add(score = 1) {
-      if (this.energy > 0) {
-        this.score += this.tapEarnings;
-        this.energy -= 1;
-        this.taps += 1;
-        debouncedUpdateScore(this.score); // Обновляем счёт с задержкой
-        this.saveState();
-      } else {
-        alert("У вас закончилась энергия!");
-      }
-    },
+// Добавляем очки при клике, если есть энергия
+async add(score = 1) {
+  if (this.energy > 0) {
+    this.score += this.tapEarnings;
+    this.energy -= 1;
+    this.taps += 1;
+    this.saveState();
+    await updateScore(this.score); // Синхронизируем с базой данных
+  } else {
+    alert("У вас закончилась энергия!");
+  }
+},
 
-    // Устанавливаем новый счёт
-    setScore(score) {
-      this.score = score;
-      this.saveState();
-    },
+// Устанавливаем новый счёт
+async setScore(score) {
+  this.score = score;
+  this.saveState();
+  await updateScore(this.score); // Синхронизируем с базой данных
+},
+
 
     // Восстанавливаем всю энергию
     restoreEnergy() {
