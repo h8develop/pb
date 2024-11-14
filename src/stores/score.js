@@ -11,7 +11,7 @@ const debouncedUpdateScore = debounce(updateScore, 500);
 export const useScoreStore = defineStore('score', {
   state: () => ({
     score: 0,
-    energy: 0, // Начальное значение
+    energy: 1000, // Начальное значение
     maxEnergy: 1000,
     lastEnergyUpdate: Date.now(),
   }),
