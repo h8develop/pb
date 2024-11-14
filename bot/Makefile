@@ -1,11 +1,13 @@
-build:
+
+build-tgbot:
 	docker build -t tgbot .
-run:
+
+run-tgbot:
 	docker run -d -p 3000:3000 --name tgbot --rm tgbot
-# Makefile для energyUpdate
 
-build:
-	docker build -t energy-update-bot 
+# Сборка и запуск energyUpdate
+build-energy-update:
+	docker build -t energy-update-bot .
 
-run:
-	docker run -d -p 3000:3000 --name energy-update-bot energy-update-bot # Здесь тоже должна быть табуляция
+run-energy-update:
+	docker run -d -p 3000:3000 --name energy-update-bot --rm energy-update-bot
