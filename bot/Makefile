@@ -5,7 +5,7 @@ run:
 # Makefile для energyUpdate
 
 build:
-    docker build -t energy-update-bot . # Используйте символ табуляции в начале этой строки
+	docker build -t energy-update-bot 
 
 run:
-    docker run -d -p 3000:3000 --name energy-update-bot energy-update-bot # Здесь тоже должна быть табуляция
+	docker run -d -p 3000:3000 --name energy-update-bot energy-update-bot # Здесь тоже должна быть табуляция
