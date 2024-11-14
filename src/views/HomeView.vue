@@ -75,6 +75,8 @@ const scoreStore = useScoreStore();
 const img = ref(null);
 const router = useRouter();
 
+
+
 // Данные пользователя
 const userAvatar = ref('../assets/default-avatar.png');
 const userName = ref('Имя пользователя');
@@ -105,26 +107,6 @@ function closeDailyMissions() {
   isDailyModalOpen.value = false;
 }
 
-// Таймер обратного отсчёта
-function updateTimer() {
-  const endTime = new Date('2024-12-31T23:59:59');
-  const currentTime = new Date();
-  const timeDiff = endTime - currentTime;
-
-  if (timeDiff > 0) {
-    const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
-    const seconds = Math.floor((timeDiff / 1000) % 60);
-    timeLeft.value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  } else {
-    timeLeft.value = '00:00:00';
-  }
-}
-
-onMounted(() => {
-  updateTimer();
-  setInterval(updateTimer, 1000);
-});
 
 // Переходы
 function goToDailyMissions() {

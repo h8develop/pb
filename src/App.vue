@@ -13,6 +13,9 @@ import TheMenu from './components/TheMenu.vue'
 import { onMounted, ref } from 'vue'
 import { useAppStore } from '@/stores/app'
 import { useTelegram } from '@/services/telegram'
+import { useScoreStore } from '@/stores/score';
+    const scoreStore = useScoreStore();
+    scoreStore.loadUserData();
 
 const loaded = ref(false)
 const app = useAppStore()

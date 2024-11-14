@@ -1,24 +1,24 @@
-import supabase from '@/services/supabase'
-import { useTelegram } from '@/services/telegram'
-import { useScoreStore } from '@/stores/score'
+import supabase from '@/services/supabase';
+import { useTelegram } from '@/services/telegram';
+import { useScoreStore } from '@/stores/score';
 
-const { user } = useTelegram()
+const { user } = useTelegram();
+const MY_ID = user?.id ?? 4252;
 
-const MY_ID = user?.id ?? 4252
-
+// Переносим вызов `useScoreStore` внутрь функций, чтобы Pinia была активной
 export async function fetchTasks() {
-  const { data } = await supabase.from('tasks').select('*')
-  return data
+  const { data } = await supabase.from('tasks').select('*');
+  return data;
 }
 
 export async function getOrCreateUser() {
   const pontentialUser = await supabase
     .from('users')
     .select()
-    .eq('telegram', MY_ID)
+    .eq('telegram', MY_ID);
 
   if (pontentialUser.data.length !== 0) {
-    return pontentialUser.data[0]
+    return pontentialUser.data[0];
   }
 
   const newUser = {
@@ -26,20 +26,19 @@ export async function getOrCreateUser() {
     friends: {},
     tasks: {},
     score: 0,
-  }
+  };
 
-  await supabase.from('users').insert(newUser)
-  return newUser
+  await supabase.from('users').insert(newUser);
+  return newUser;
 }
 
-export async function updateScore(score) {
-  await supabase.from('users').update({ score }).eq('telegram', MY_ID)
+export async function updateScore(newScore) {
+  await supabase.from('users').update({ score: newScore }).eq('telegram', MY_ID);
 }
 
 export async function registerRef(userName, refId) {
-  const { data } = await supabase.from('users').select().eq('telegram', +refId)
-
-  const refUser = data[0]
+  const { data } = await supabase.from('users').select().eq('telegram', +refId);
+  const refUser = data[0];
 
   await supabase
     .from('users')
@@ -47,13 +46,20 @@ export async function registerRef(userName, refId) {
       friends: { ...refUser.friends, [MY_ID]: userName },
       score: refUser.score + 50,
     })
-    .eq('telegram', +refId)
+    .eq('telegram', +refId);
 }
 
 export async function completeTask(user, task) {
-  const score = useScoreStore()
-  const newScore = score.score + task.amount
-  score.setScore(newScore)
+  // Переносим вызов `useScoreStore` внутрь функции
+  const scoreStore = useScoreStore();
+  const newScore = scoreStore.score + task.amount;
+
+  // Убедитесь, что `setScore` вызывается корректно
+  if (typeof scoreStore.setScore === 'function') {
+    scoreStore.setScore(newScore);
+  } else {
+    console.error("Ошибка: `setScore` не является функцией");
+  }
 
   await supabase
     .from('users')
@@ -61,12 +67,11 @@ export async function completeTask(user, task) {
       tasks: { ...user.tasks, [task.id]: true },
       score: newScore,
     })
-    .eq('telegram', MY_ID)
+    .eq('telegram', MY_ID);
 }
 
 export async function updateIncomeWithReferral(userId, income) {
   try {
-    // Получаем данные пользователя и список его друзей
     const { data: user, error: userError } = await supabase
       .from('users')
       .select('friends')
@@ -75,7 +80,6 @@ export async function updateIncomeWithReferral(userId, income) {
 
     if (userError) throw userError;
 
-    // Обновляем доход пользователя
     const { error: incomeUpdateError } = await supabase
       .from('users')
       .update({ score: supabase.raw(`score + ${income}`) })
@@ -83,11 +87,8 @@ export async function updateIncomeWithReferral(userId, income) {
 
     if (incomeUpdateError) throw incomeUpdateError;
 
-    // Начисляем бонусы друзьям (рефералам)
     for (const friendId in user.friends) {
       const bonusIncome = income * 0.2;
-
-      // Получаем данные рефера
       const { data: referrer, error: referrerError } = await supabase
         .from('users')
         .select('score')
@@ -99,7 +100,6 @@ export async function updateIncomeWithReferral(userId, income) {
         continue;
       }
 
-      // Обновляем счёт рефера
       const { error: referrerIncomeUpdateError } = await supabase
         .from('users')
         .update({ score: supabase.raw(`score + ${bonusIncome}`) })
@@ -110,14 +110,13 @@ export async function updateIncomeWithReferral(userId, income) {
         continue;
       }
 
-      // Записываем начисление в таблицу referral_income
       const { error: referralIncomeInsertError } = await supabase
         .from('referral_income')
         .insert({
           user_id: userId,
           referrer_id: friendId,
           amount: bonusIncome,
-          timestamp: new Date().toISOString() // Время начисления бонуса
+          timestamp: new Date().toISOString()
         });
 
       if (referralIncomeInsertError) {
