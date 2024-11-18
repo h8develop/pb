@@ -23,23 +23,23 @@
 </template>
 
 <script setup>
-import { useTelegram } from '@/services/telegram'
-import { useAppStore } from '@/stores/app'
-import { onMounted } from 'vue'
+import { useTelegram } from '@/services/telegram';
+import { useAppStore } from '@/stores/app';
+import { onMounted } from 'vue';
 
-const { tg } = useTelegram()
-const app = useAppStore()
+const { tg } = useTelegram();
+const app = useAppStore();
 
 onMounted(() => {
-  app.fetchTasks()
-})
+  app.fetchTasks();
+});
 
-function openTask(task) {
-  app.completeTask(task)
+async function openTask(task) {
+  await app.completeTask(task);
   if (task.url.includes('t.me')) {
-    tg.openTelegramLink(task.url)
+    tg.openTelegramLink(task.url);
   } else {
-    tg.openLink(task.url)
+    tg.openLink(task.url);
   }
 }
 </script>

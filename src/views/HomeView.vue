@@ -16,10 +16,10 @@
       <h2 class="score" id="score">{{ scoreStore.score }}</h2>
       <div class="earnings">
         <div class="earning-item">
-          <p>{{ scoreStore.hourlyEarnings }} голда / час</p>
+          <p>{{ hourlyEarnings }} голда / час</p>
         </div>
         <div class="earning-item">
-          <p>{{ scoreStore.tapEarnings }} голда / тап</p>
+          <p>{{ tapEarnings }} голда / тап</p>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
       <img @click="increment" ref="img" id="circle" src="../assets/tap_bols.png" alt="Click Target" />
     </div>
 
-    <!-- Счетчик кликов -->
+    <!-- Счетчик энергии -->
     <div class="tap-counter">
       <img src="/src/assets/white_coin_energy.png" alt="Icon" class="tap-icon" />
       <p>{{ scoreStore.energy }} / {{ scoreStore.maxEnergy }}</p>
@@ -44,17 +44,13 @@
     </div>
 
     <!-- Иконка ежедневных миссий -->
-    <div class="daily-icon" @click="openDailyMissions">
+    <div class="daily-icon" @click="isDailyModalOpen = true">
       <img src="" alt="Daily Missions" />
     </div>
 
     <!-- Модальное окно для ежедневных миссий -->
-    <div v-if="isDailyModalOpen" class="modal">
-      <div class="modal-content">
-        <button class="close-modal" @click="closeDailyMissions">Закрыть</button>
-        <DailyMissions />
-      </div>
-    </div>
+    <DailyMissionsModal v-if="isDailyModalOpen" @close="isDailyModalOpen = false" />
+
     <!-- Модальное окно для "О токене" -->
     <div v-if="isTokenModalOpen" class="modal-overlay" @click="closeTokenModal">
       <div class="modal-content" @click.stop>
@@ -67,24 +63,50 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useScoreStore } from '@/stores/score';
 import { useRouter } from 'vue-router';
+import { useTelegram } from '@/services/telegram';
+import DailyMissionsModal from '@/components/DailyMissionsModal.vue';
 
 const scoreStore = useScoreStore();
-const img = ref(null);
 const router = useRouter();
-
-
+const { user } = useTelegram();
+const img = ref(null);
 
 // Данные пользователя
 const userAvatar = ref('../assets/default-avatar.png');
 const userName = ref('Имя пользователя');
 
+// Проверяем, есть ли данные пользователя из Telegram
+if (user) {
+  userAvatar.value = user.photo_url || '../assets/default-avatar.png';
+  userName.value = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+}
+
 // Управление модальным окном для "О токене"
 const isTokenModalOpen = ref(false);
 
-// Функции для открытия и закрытия модального окна
+// Управление модальным окном для ежедневных миссий
+const isDailyModalOpen = ref(false);
+
+// Таймер (пример без функциональности)
+const timeLeft = ref('00:00:00');
+
+// **Добавляем вычисляемое свойство tapEarnings**
+const tapEarnings = computed(() => {
+  // Логика для вычисления дохода за тап
+  // Если мультитап не улучшен, доход за тап равен 1
+  return scoreStore.multitapLevel > 0 ? scoreStore.multitapLevel + 1 : 1;
+});
+
+// Значения доходов (примерные значения, их можно получить из стора или вычислить)
+const hourlyEarnings = computed(() => {
+  // Логика для вычисления дохода в час
+  // Здесь вы можете добавить свою формулу расчета
+  return 0; // Пример значения
+});
+
 function openTokenModal() {
   isTokenModalOpen.value = true;
 }
@@ -93,29 +115,13 @@ function closeTokenModal() {
   isTokenModalOpen.value = false;
 }
 
-// Таймер
-const timeLeft = ref('00:00:00');
-
-// Управление модальным окном
-const isDailyModalOpen = ref(false);
-
-function openDailyMissions() {
-  isDailyModalOpen.value = true;
-}
-
-function closeDailyMissions() {
-  isDailyModalOpen.value = false;
-}
-
-
 // Переходы
 function goToDailyMissions() {
-  openDailyMissions(); // Открыть модальное окно с ежедневными миссиями
+  isDailyModalOpen.value = true; // Открыть модальное окно с ежедневными миссиями
 }
 
+// Функция для обработки клика по монетке
 function increment(event) {
-  scoreStore.add(); // Используем метод add из нового кода
-
   const rect = event.target.getBoundingClientRect();
   const offsetX = event.clientX - rect.left - rect.width / 2;
   const offsetY = event.clientY - rect.top - rect.height / 2;
@@ -131,10 +137,20 @@ function increment(event) {
 
   const plusOne = document.createElement('div');
   plusOne.classList.add('plus-one');
-  plusOne.textContent = `+${scoreStore.tapEarnings}`;
+  plusOne.textContent = `+${tapEarnings.value}`;
   plusOne.style.left = `${event.clientX - rect.left}px`;
   plusOne.style.top = `${event.clientY - rect.top}px`;
   img.value.parentElement.appendChild(plusOne);
   setTimeout(() => plusOne.remove(), 2000);
+
+  // Обновляем расчет количества тапов
+  const taps = 1; // За один тап пользователь тратит 1 энергию
+  scoreStore.add(taps);
 }
+
+// Загружаем данные пользователя при монтировании компонента
+onMounted(() => {
+  scoreStore.loadUserData();
+});
 </script>
+

@@ -1,131 +1,87 @@
-import supabase from '@/services/supabase';
-import { useTelegram } from '@/services/telegram';
-import { useScoreStore } from '@/stores/score';
-
-const { user } = useTelegram();
-const MY_ID = user?.id ?? 4252;
-
-// Переносим вызов `useScoreStore` внутрь функций, чтобы Pinia была активной
-export async function fetchTasks() {
-  const { data } = await supabase.from('tasks').select('*');
-  return data;
-}
+// src/api/app.js
+import supabase from '../services/supabase';
+import { useTelegram } from '../services/telegram';
 
 export async function getOrCreateUser() {
-  const pontentialUser = await supabase
+  const { user } = useTelegram();
+  const telegramId = Number(user.id);
+
+  const { data: existingUser, error } = await supabase
     .from('users')
     .select()
-    .eq('telegram', MY_ID);
+    .eq('telegram', telegramId)
+    .single();
 
-  if (pontentialUser.data.length !== 0) {
-    return pontentialUser.data[0];
+  if (existingUser) {
+    return existingUser;
   }
 
   const newUser = {
-    telegram: MY_ID,
+    telegram: telegramId,
     friends: {},
     tasks: {},
     score: 0,
+    energy: 1000,
+    max_energy: 1000,
+    multitap_level: 0, // Убедитесь, что уровень мультитапа установлен в 0
+    last_energy_update: new Date().toISOString(), // Добавьте поле для отслеживания времени обновления энергии
   };
+  
 
-  await supabase.from('users').insert(newUser);
-  return newUser;
-}
-
-export async function updateScore(newScore) {
-  await supabase.from('users').update({ score: newScore }).eq('telegram', MY_ID);
-}
-
-export async function registerRef(userName, refId) {
-  const { data } = await supabase.from('users').select().eq('telegram', +refId);
-  const refUser = data[0];
-
-  await supabase
+  const { data: insertedUser, error: insertError } = await supabase
     .from('users')
-    .update({
-      friends: { ...refUser.friends, [MY_ID]: userName },
-      score: refUser.score + 50,
-    })
-    .eq('telegram', +refId);
+    .insert(newUser)
+    .select()
+    .single();
+
+  if (insertError) {
+    console.error('Ошибка при создании нового пользователя:', insertError);
+    return null;
+  }
+
+  return insertedUser;
+}
+
+export async function fetchTasks() {
+  try {
+    const { data, error } = await supabase.from('tasks').select('*');
+    if (error) {
+      console.error('Ошибка при получении задач:', error);
+      return [];
+    }
+    return data;
+  } catch (err) {
+    console.error('Ошибка при получении задач:', err);
+    return [];
+  }
 }
 
 export async function completeTask(user, task) {
-  // Переносим вызов `useScoreStore` внутрь функции
-  const scoreStore = useScoreStore();
-  const newScore = scoreStore.score + task.amount;
-
-  // Убедитесь, что `setScore` вызывается корректно
-  if (typeof scoreStore.setScore === 'function') {
-    scoreStore.setScore(newScore);
-  } else {
-    console.error("Ошибка: `setScore` не является функцией");
-  }
-
-  await supabase
-    .from('users')
-    .update({
-      tasks: { ...user.tasks, [task.id]: true },
-      score: newScore,
-    })
-    .eq('telegram', MY_ID);
-}
-
-export async function updateIncomeWithReferral(userId, income) {
   try {
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('friends')
-      .eq('telegram', userId)
-      .single();
-
-    if (userError) throw userError;
-
-    const { error: incomeUpdateError } = await supabase
-      .from('users')
-      .update({ score: supabase.raw(`score + ${income}`) })
-      .eq('telegram', userId);
-
-    if (incomeUpdateError) throw incomeUpdateError;
-
-    for (const friendId in user.friends) {
-      const bonusIncome = income * 0.2;
-      const { data: referrer, error: referrerError } = await supabase
-        .from('users')
-        .select('score')
-        .eq('telegram', friendId)
-        .single();
-
-      if (referrerError) {
-        console.error(`Error fetching referrer data for ${friendId}:`, referrerError.message);
-        continue;
-      }
-
-      const { error: referrerIncomeUpdateError } = await supabase
-        .from('users')
-        .update({ score: supabase.raw(`score + ${bonusIncome}`) })
-        .eq('telegram', friendId);
-
-      if (referrerIncomeUpdateError) {
-        console.error(`Error updating score for referrer ${friendId}:`, referrerIncomeUpdateError.message);
-        continue;
-      }
-
-      const { error: referralIncomeInsertError } = await supabase
-        .from('referral_income')
-        .insert({
-          user_id: userId,
-          referrer_id: friendId,
-          amount: bonusIncome,
-          timestamp: new Date().toISOString()
-        });
-
-      if (referralIncomeInsertError) {
-        console.error(`Error inserting referral income for ${friendId}:`, referralIncomeInsertError.message);
-      } else {
-        console.log(`Bonus income of ${bonusIncome} recorded for referrer ${friendId}`);
-      }
+    // Проверяем, выполнена ли задача ранее
+    if (user.tasks && user.tasks[task.id]) {
+      console.log('Задача уже выполнена');
+      return;
     }
-  } catch (error) {
-    console.error('Error updating income with referral bonus:', error.message);
+
+    // Обновляем список выполненных задач пользователя
+    const updatedTasks = { ...user.tasks, [task.id]: true };
+
+    // Начисляем вознаграждение пользователю
+    const newScore = user.score + task.amount;
+
+    // Обновляем данные пользователя в базе данных
+    const { error } = await supabase
+      .from('users')
+      .update({ tasks: updatedTasks, score: newScore })
+      .eq('id', user.id);
+
+    if (error) {
+      console.error('Ошибка при обновлении данных пользователя:', error);
+    } else {
+      console.log('Задача успешно выполнена и награда начислена');
+    }
+  } catch (err) {
+    console.error('Ошибка при выполнении задачи:', err);
   }
 }

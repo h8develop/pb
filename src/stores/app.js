@@ -1,14 +1,13 @@
+// src/stores/app.js
+import { defineStore } from 'pinia';
+import { useScoreStore } from './score';
+import { useTelegram } from '@/services/telegram';
+import { registerRef } from '@/api/users';
 import {
   getOrCreateUser,
-  registerRef,
   fetchTasks,
   completeTask,
-} from '@/api/app'
-import { defineStore } from 'pinia'
-import { useScoreStore } from './score'
-import { useTelegram } from '@/services/telegram'
-
-const { user } = useTelegram()
+} from '@/api/app';
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -17,21 +16,33 @@ export const useAppStore = defineStore('app', {
   }),
   actions: {
     async init(ref) {
-      this.user = await getOrCreateUser()
+      const { user: telegramUser } = useTelegram();
 
-      const score = useScoreStore()
+      this.user = await getOrCreateUser();
 
-      score.setScore(this.user.score)
+      const scoreStore = useScoreStore();
 
+      if (typeof scoreStore.setScore === 'function') {
+        scoreStore.setScore(this.user.score);
+        scoreStore.setUserId(this.user.id);
+      } else {
+        console.error('Ошибка: метод setScore не найден в scoreStore');
+      }
+
+      // Если есть реферальный код и он не принадлежит самому пользователю
       if (ref && +ref !== +this.user.telegram) {
-        await registerRef(user?.first_name ?? 'kto', ref)
+        await registerRef(telegramUser?.first_name ?? 'kto', ref);
       }
     },
+
     async completeTask(task) {
-      await completeTask(this.user, task)
+      await completeTask(this.user, task);
+      // Обновляем данные пользователя после выполнения задачи
+      this.user = await getOrCreateUser();
     },
+
     async fetchTasks() {
-      this.tasks = await fetchTasks()
+      this.tasks = await fetchTasks();
     },
   },
-})
+});

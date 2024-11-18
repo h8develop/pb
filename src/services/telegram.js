@@ -3,7 +3,7 @@ export function useTelegram() {
 
   const isLocalTest = !tg.initDataUnsafe?.user;
   const mockUser = {
-    id: 123456,
+    id: 666,
     username: "mock_user",
     first_name: "Mock",
     last_name: "User",
