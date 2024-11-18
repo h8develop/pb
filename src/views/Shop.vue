@@ -5,7 +5,7 @@
       <div class="item" v-for="item in shopItems" :key="item.id">
         <h3>{{ item.name }}</h3>
         <p>{{ item.description }}</p>
-        <p>Стоимость: {{ item.cost }} коинов</p>
+        <p>Стоимость: {{ item.cost }} голды</p>
         <button @click="buyItem(item)" :disabled="!canAfford(item.cost)">
           Купить
         </button>
@@ -20,20 +20,21 @@ import { useScoreStore } from '@/stores/score';
 
 const scoreStore = useScoreStore();
 
+
 const shopItems = ref([
   {
     id: 1,
     name: 'Восполнить энергию',
-    description: 'Восстановить энергию до максимума (1000 тапов)',
+    description: '',
     cost: 1000,
     action: 'restoreEnergy',
   },
   {
     id: 2,
-    name: 'Увеличить максимальную энергию',
-    description: 'Увеличить максимальное количество энергии до 2000 тапов',
+    name: 'Увеличить максимальную энергию до 2000',
+    description: 'Увеличивает максимальную энергию до 2000 тапов',
     cost: 10000,
-    action: 'increaseMaxEnergy',
+    action: 'increaseMaxEnergyTo2000',
   },
   {
     id: 3,
@@ -44,10 +45,32 @@ const shopItems = ref([
   },
   {
     id: 4,
-    name: 'Мультитап',
-    description: 'Увеличь количество тапов за одно нажатие',
+    name: 'Удвой заработок',
+    description: 'Увеличь количество монет за тап в 2 раза',
     cost: 10000,
     action: 'increaseMultitap',
+  },
+  // Новые предметы
+  {
+    id: 5,
+    name: 'Увеличить максимальную энергию до 4000',
+    description: 'Увеличивает максимальную энергию до 4000 тапов',
+    cost: 20000,
+    action: 'increaseMaxEnergyTo4000',
+  },
+  {
+    id: 6,
+    name: 'Увеличить максимальную энергию до 6000',
+    description: 'Увеличивает максимальную энергию до 6000 тапов',
+    cost: 30000,
+    action: 'increaseMaxEnergyTo6000',
+  },
+  {
+    id: 7,
+    name: 'Золотой брелок',
+    description: 'Дает пассивный заработок в 100 монет каждый час',
+    cost: 50000,
+    action: 'goldenTrinket',
   },
 ]);
 
@@ -69,14 +92,23 @@ async function buyItem(item) {
     case 'restoreEnergy':
       scoreStore.energy = scoreStore.maxEnergy;
       break;
-    case 'increaseMaxEnergy':
+    case 'increaseMaxEnergyTo2000':
       scoreStore.maxEnergy = 2000;
+      break;
+    case 'increaseMaxEnergyTo4000':
+      scoreStore.maxEnergy = 4000;
+      break;
+    case 'increaseMaxEnergyTo6000':
+      scoreStore.maxEnergy = 6000;
       break;
     case 'customButton':
       // Логика кастомизации кнопки
       break;
     case 'increaseMultitap':
       scoreStore.multitapLevel += 1;
+      break;
+    case 'goldenTrinket':
+      scoreStore.hasGoldenTrinket = true;
       break;
     default:
       break;

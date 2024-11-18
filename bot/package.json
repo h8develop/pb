@@ -5,8 +5,9 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "concurrently \"node -r dotenv/config app.js\" \"node -r dotenv/config energyUpdate.js\""
-  },
+  "start": "concurrently \"node -r dotenv/config app.js\" \"node -r dotenv/config energyUpdate.js\" \"node -r dotenv/config passiveIncomeUpdate.js\""
+},
+
   "keywords": [],
   "author": "",
   "license": "ISC",
