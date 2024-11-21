@@ -54,7 +54,7 @@
     </div>
     <!-- Friends list -->
     <div
-      class="rounded-2xl bg-[#2a292e4d] bg-card text-card-foreground shadow-sm w-full max-w-md mx-auto mt-4"
+      class="rounded-2xl bg-[#2a292e4d] bg-card text-card-foreground shadow-sm w-full mt-4"
     >
       <div class="flex flex-col space-y-1.5 p-6">
         <h3 class="text-2xl font-semibold leading-none tracking-tight">

@@ -92,13 +92,22 @@
     </div>
 
     <!-- Кнопка для ежедневных миссий -->
-    <button
+    <!-- Daily mission -->
+    <!-- <button
       class="p-2 rounded-2xl bg-gradient-to-r from-[#ff8c00] via-yellow-800 to-[#ffdd57]"
       @click="openDailyMissions"
     >
       <span> Ежедневные миссии </span>
+    </button> -->
+    <!-- <div class="absolute bottom-40">
+      <DailyMissionButton />
+    </div> -->
+    <button
+      class="daily-missions-button menu-button bg-gradient-to-r from-[#ff8c00] via-yellow-800 to-[#ffdd57]"
+      @click="openDailyMissions"
+    >
+      Ежедневные миссии
     </button>
-
     <!-- Модальное окно для ежедневных миссий -->
     <DailyMissionsModal
       v-if="isDailyModalOpen"
@@ -128,6 +137,8 @@ import { useScoreStore } from "@/stores/score";
 import { useRouter } from "vue-router";
 import { useTelegram } from "@/services/telegram";
 import DailyMissionsModal from "@/components/DailyMissionsModal.vue";
+import DailyMissionButton from "@/components/DailyMissionButton.vue";
+import DailyMissionButtonTest from "@/components/DailyMissionButtonTest.vue";
 
 const scoreStore = useScoreStore();
 const router = useRouter();
