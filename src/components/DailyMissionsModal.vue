@@ -1,8 +1,26 @@
 <template>
   <div class="modal-overlay" @click="close">
-    <div class="modal-content daily-modal-content" @click.stop>
+    <div class="modal-content daily-modal-content relative" @click.stop>
+      <button class="absolute top-1 right-2 text-2xl" @click="close">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="1em"
+          height="1em"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-miterlimit="10"
+            stroke-width="1.5"
+            d="m7.757 16.243l8.486-8.486m0 8.486L7.757 7.757"
+          />
+        </svg>
+      </button>
       <h2>Заходи каждый день и забирай бонус!</h2>
-      <div class="missions-grid">
+      <div class="missions-grid grid grid-cols-3 mt-4 gap-2">
         <button
           v-for="day in 12"
           :key="day"
@@ -20,16 +38,19 @@
           <img
             src="https://cdn-icons-png.flaticon.com/512/5525/5525147.png"
             alt=""
-            class="h-12 w-12"
+            class="h-10 w-10"
           />
           <span
-            class="text-sm font-normal mt-2 py-0.5 px-4 bg-yellow-500 rounded-full"
+            class="text-sm font-normal mt-1 py-0.5 px-4 bg-yellow-500 rounded-full"
           >
             {{ day * 10 }}
           </span>
         </button>
       </div>
-      <button class="menu-button close-button" @click="close">Закрыть</button>
+      <!-- Claim Button -->
+      <div>
+        <button class="mission-button menu-button mt-4">требовать</button>
+      </div>
     </div>
 
     <!--  -->
@@ -153,18 +174,18 @@ async function collectReward(day) {
 
 /* Стили для кнопок миссий */
 .missions-grid {
-  display: flex;
+  /* display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin: 20px 0;
+  margin: 20px 0; */
 }
 
 .mission-button {
-  flex: 1 0 45%; /* Сделать кнопки более широкими */
-  padding: 10px;
+  /* flex: 1 0 45%; Сделать кнопки более широкими */
+  /* padding: 10px; */
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  /* border-radius: 8px; */
+  font-size: 12px;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
 }

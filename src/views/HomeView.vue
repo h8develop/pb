@@ -92,24 +92,11 @@
     </div>
 
     <!-- Кнопка для ежедневных миссий -->
-    <!-- Daily missions candy button -->
-    <!-- <button
-      class="candy flex items-center justify-center flex-col gap-1"
-      style="position: absolute; bottom: 78px; left: 1.3rem; right: 1.3rem"
-    >
-      <img
-        src="https://cdn3d.iconscout.com/3d/premium/thumb/gift-box-3d-icon-download-in-png-blend-fbx-gltf-file-formats--present-surprise-package-new-year-party-pack-festival-days-icons-5740394.png?f=webp"
-        alt=""
-        class="w-16"
-      />
-      <span> Ежедневные миссии </span>
-    </button> -->
-
     <button
-      class="daily-missions-button menu-button bg-gradient-to-r from-[#ff8c00] via-yellow-800 to-[#ffdd57]"
+      class="p-2 rounded-2xl bg-gradient-to-r from-[#ff8c00] via-yellow-800 to-[#ffdd57]"
       @click="openDailyMissions"
     >
-      Ежедневные миссии
+      <span> Ежедневные миссии </span>
     </button>
 
     <!-- Модальное окно для ежедневных миссий -->
