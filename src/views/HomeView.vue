@@ -92,16 +92,7 @@
     </div>
 
     <!-- Кнопка для ежедневных миссий -->
-    <!-- Daily mission -->
-    <!-- <button
-      class="p-2 rounded-2xl bg-gradient-to-r from-[#ff8c00] via-yellow-800 to-[#ffdd57]"
-      @click="openDailyMissions"
-    >
-      <span> Ежедневные миссии </span>
-    </button> -->
-    <!-- <div class="absolute bottom-40">
-      <DailyMissionButton />
-    </div> -->
+
     <button
       class="daily-missions-button menu-button bg-gradient-to-r from-[#ff8c00] via-yellow-800 to-[#ffdd57]"
       @click="openDailyMissions"
