@@ -320,12 +320,18 @@ body {
 
 .contest-image {
   /* width: 100%; */
-  width: 40px;
+  width: 46px;
   border-radius: 10px;
   position: absolute;
-  top: -62px;
-  left: 76%;
+  top: -34px;
+  left: 40%;
   right: 50%;
+  animation: beat 1.25s infinite alternate;
+}
+@keyframes beat {
+  to {
+    transform: scale(1.4);
+  }
 }
 
 .timer {

@@ -62,6 +62,7 @@
         </h3>
       </div>
       <div class="p-6 pt-0">
+        {{ friends }}
         <ul class="space-y-4">
           <li
             class="flex items-center space-x-4"

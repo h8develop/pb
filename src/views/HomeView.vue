@@ -7,7 +7,7 @@
       >
         <div class="">
           <img
-            :alt="userAvatar"
+            alt="userAvatar"
             :src="userAvatar"
             class="h-8 w-8 rounded-full object-cover object-center"
           />
@@ -27,12 +27,12 @@
     </div>
 
     <!-- Валюта и доходы -->
-    <div class="header mt-10">
+    <div class="header mt-2">
       <div class="flex">
         <img src="../assets/valuta.png" alt="coin" class="valuta-icon" />
         <h2 class="score" id="score">{{ scoreStore.score }}</h2>
       </div>
-      <div class="earnings flex flex-col gap-2 mt-5">
+      <div class="earnings flex flex-col gap-2 mt-2">
         <div class="earning-item inline-flex items-center">
           <img
             src="https://cdn-icons-png.flaticon.com/512/9382/9382196.png"
@@ -53,7 +53,7 @@
     </div>
 
     <!-- Монетка -->
-    <div class="circle mt-10">
+    <div class="circle mt-2">
       <img
         @click="increment"
         ref="img"
@@ -81,7 +81,7 @@
       <!-- Контейнер для конкурса -->
       <div class="contest-container cursor-pointer" @click="goToDailyMissions">
         <img
-          src="https://pngimg.com/d/iphone_13_PNG18.png"
+          src="https://phones.mintmobile.com/wp-content/uploads/2024/09/Apple_iPhone_16_Pro_black_titanium_front_back1.png"
           alt="Конкурс"
           class="contest-image"
         />
@@ -94,11 +94,12 @@
     <!-- Кнопка для ежедневных миссий -->
 
     <button
-      class="daily-missions-button menu-button bg-gradient-to-r from-[#ff8c00] via-yellow-800 to-[#ffdd57]"
+      class="daily-missions-button menu-button"
       @click="openDailyMissions"
     >
       Ежедневные миссии
     </button>
+
     <!-- Модальное окно для ежедневных миссий -->
     <DailyMissionsModal
       v-if="isDailyModalOpen"
@@ -135,13 +136,12 @@ const { user } = useTelegram();
 const img = ref(null);
 
 // Данные пользователя
-const userAvatar = new URL("../assets/default-avatar.png", import.meta.url)
-  .href;
+const userAvatar = ref("../assets/default-avatar.png");
 const userName = ref("Имя пользователя");
 
 // Проверяем, есть ли данные пользователя из Telegram
 if (user) {
-  // userAvatar = user.photo_url || "../assets/default-avatar.png";
+  userAvatar.value = user.photo_url || "../assets/default-avatar.png";
   userName.value = `${user.first_name || ""} ${user.last_name || ""}`.trim();
 }
 
@@ -315,13 +315,15 @@ onMounted(() => {
   left: 1.3rem;
   right: 1.3rem;
   justify-content: space-around;
-  height: 40px;
+  height: 50px;
   border-radius: 20px;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   padding-top: 4px;
   padding-bottom: 4px;
-  background-image: url("https://cdn3d.iconscout.com/3d/premium/thumb/gift-box-3d-icon-download-in-png-blend-fbx-gltf-file-formats--present-surprise-package-new-year-party-pack-festival-days-icons-5740394.png?f=webp");
-  background-position: top right;
+  padding: 4px;
+  background-image: url("https://cdn3d.iconscout.com/3d/premium/thumb/gift-box-3d-icon-download-in-png-blend-fbx-gltf-file-formats--present-surprise-package-new-year-party-pack-festival-days-icons-5740394.png?f=webp"),
+    url("https://cdn3d.iconscout.com/3d/premium/thumb/gift-box-3d-icon-download-in-png-blend-fbx-gltf-file-formats--present-surprise-package-new-year-party-pack-festival-days-icons-5740394.png?f=webp");
+  background-position: top right, top left;
   background-size: contain;
   background-repeat: no-repeat;
   z-index: 1;
@@ -330,9 +332,9 @@ onMounted(() => {
 }
 
 .daily-missions-button:hover {
-  background: rgba(42, 41, 46, 0.3); /* Полупрозрачный фон */
-
-  animation: animate 8s linear infinite;
+  /* background: rgba(42, 41, 46, 0.3); Полупрозрачный фон */
+  /* animation: animate 10s linear infinite; */
+  transform: scale(0.9);
 }
 @keyframes animate {
   0% {
