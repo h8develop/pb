@@ -5,18 +5,20 @@
       <div
         class="rounded-full flex items-center bg-[#2a292e] py-0.5 pr-2.5 pl-1.5 border border-transparent text-sm text-white transition-all shadow-sm"
       >
-        <div class="h-5 w-5 mr-2">
+        <div class="">
           <img
             :alt="userAvatar"
             :src="userAvatar"
-            class="h-full w-full rounded-full object-cover object-center"
+            class="h-8 w-8 rounded-full object-cover object-center"
           />
         </div>
-        {{ userName }}
+        <span>
+          {{ userName }}
+        </span>
       </div>
       <h1 class="bot-title">GoldenBust</h1>
       <div
-        class="max-w-full leading-none font-normal m-1 px-2 py-1 rounded-full bg-[#2a292e] text-xs text-white"
+        class="max-w-full leading-none font-normal m-1 px-2 py-2 rounded-full bg-[#2a292e] text-xs text-white"
         role="button"
         @click="openTokenModal"
       >
@@ -51,7 +53,7 @@
     </div>
 
     <!-- Монетка -->
-    <div class="circle mt-20">
+    <div class="circle mt-10">
       <img
         @click="increment"
         ref="img"
@@ -371,110 +373,5 @@ onMounted(() => {
   filter: blur(20px);
   opacity: 1;
   animation: animate 8s linear infinite;
-}
-
-.candy {
-  position: relative;
-  margin: 10px;
-  padding: 0 6px 8px;
-  font-family: "Pacifico", cursive;
-  box-sizing: border-box;
-  min-width: 220px;
-  font-weight: bold;
-  font-size: 32px;
-  color: #fff;
-  z-index: 1;
-  cursor: pointer;
-  outline: none;
-  overflow: hidden;
-  border-style: solid;
-  border-color: #fe4495;
-  border-width: 3px 3px 4px;
-  text-shadow: 3px 2px 0 rgba(0, 0, 0, 0.3);
-  border-radius: 40px;
-  background: linear-gradient(to top, #fe4495, #d5095f);
-  box-shadow: 0 6px 3px -3px rgba(0, 0, 0, 0.75);
-  transition: all 0.25s cubic-bezier(1, -0.4, 0, 1.4);
-  animation: bounce 4s ease-out 0s infinite normal both;
-}
-
-@keyframes bounce {
-  2%,
-  6% {
-    transform: rotate(-5deg);
-  }
-  4%,
-  8% {
-    transform: rotate(5deg);
-  }
-  0%,
-  10% {
-    transform: inherit;
-  }
-}
-
-@keyframes bounceMin {
-  2%,
-  6% {
-    transform: rotate(-5deg) scale(0.8);
-  }
-  4%,
-  8% {
-    transform: rotate(5deg) scale(0.8);
-  }
-  0%,
-  10% {
-    transform: scale(0.8);
-  }
-}
-
-.candy.blue {
-  border-color: #3ba7f7;
-  background: linear-gradient(to top, #3ba7f7, #0172fd);
-}
-
-.candy.green {
-  border-color: #4ec445;
-  background: linear-gradient(to top, #4ec445, #069a09);
-}
-
-.candy:hover,
-.candy:focus {
-  transform: scale(0.8);
-  filter: brightness(66%);
-  animation: bounceMin 4s ease-out 0s infinite normal both;
-}
-
-.candy:before,
-.candy:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-}
-
-.candy:before {
-  height: 60%;
-  width: 100%;
-  border-radius: 0 0 25% 25%;
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0.6),
-    rgba(255, 255, 255, 0.2) 20%
-  );
-}
-
-.candy:after {
-  width: 9px;
-  height: 18px;
-  margin: 4px 0 0 16px;
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0.8)
-  );
-  border-radius: 50%;
-  transform: rotate(50deg);
 }
 </style>

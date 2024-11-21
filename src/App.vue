@@ -4,8 +4,9 @@
     style="
       padding: 20px;
       margin-top: 30px;
-      height: calc(100vh - 80px);
-      height: calc(100vh - 80px); /* Adjust based on the height of TheMenu */
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      height: calc(100vh - 100px); /* Adjust based on the height of TheMenu */
       overflow-y: auto; /* Enable vertical scrolling */
     "
   >
