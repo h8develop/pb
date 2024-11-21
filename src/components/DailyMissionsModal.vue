@@ -6,25 +6,43 @@
         <button
           v-for="day in 12"
           :key="day"
-          :class="['mission-button', 'menu-button', { completed: day < currentLevel, active: day === currentLevel }]"
+          :class="[
+            'mission-button',
+            'menu-button inline-flex flex-col items-center',
+            { completed: day < currentLevel, active: day === currentLevel },
+          ]"
           @click="collectReward(day)"
           :disabled="!canCollect(day)"
         >
-          {{ getButtonText(day) }}
+          <span class="font-bold">
+            {{ getButtonText(day) }}
+          </span>
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/5525/5525147.png"
+            alt=""
+            class="h-12 w-12"
+          />
+          <span
+            class="text-sm font-normal mt-2 py-0.5 px-4 bg-yellow-500 rounded-full"
+          >
+            {{ day * 10 }}
+          </span>
         </button>
       </div>
       <button class="menu-button close-button" @click="close">Закрыть</button>
     </div>
+
+    <!--  -->
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useUserStore } from '@/stores/userStore';
-import { useScoreStore } from '@/stores/score';
-import { defineEmits } from 'vue';
+import { ref, computed, onMounted } from "vue";
+import { useUserStore } from "@/stores/userStore";
+import { useScoreStore } from "@/stores/score";
+import { defineEmits } from "vue";
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 
 const userStore = useUserStore();
 const scoreStore = useScoreStore();
@@ -37,15 +55,18 @@ onMounted(async () => {
 });
 
 function close() {
-  emit('close');
+  emit("close");
 }
 
 function getButtonText(day) {
   if (day < currentLevel.value) {
-    return 'Выполнено';
+    return "Выполнено";
   } else if (day === currentLevel.value) {
-    return `День ${day}: ${getReward(day)} коинов`;
+    // return `День ${day}: ${getReward(day)} коинов`;
+    return `День ${day}`;
   } else {
+    // return `День ${day}: ${getReward(day)} коинов`;
+
     return `День ${day}`;
   }
 }
@@ -85,7 +106,12 @@ async function collectReward(day) {
 }
 
 .modal-content {
-  background-color: rgba(42, 41, 46, 0.9); /* Полупрозрачный фон, аналогичный меню */
+  background-color: rgba(
+    42,
+    41,
+    46,
+    0.9
+  ); /* Полупрозрачный фон, аналогичный меню */
   padding: 20px 30px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -113,7 +139,12 @@ async function collectReward(day) {
 }
 
 .menu-button:hover {
-  background-color: rgba(255, 255, 255, 0.25); /* Более яркий фон при наведении */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.25
+  ); /* Более яркий фон при наведении */
 }
 
 .close-button {
@@ -144,7 +175,7 @@ async function collectReward(day) {
 }
 
 .mission-button.active {
-  background-color: gold;
-  color: black;
+  background-color: #968a4c;
+  color: white;
 }
 </style>
