@@ -128,8 +128,6 @@ import { useScoreStore } from "@/stores/score";
 import { useRouter } from "vue-router";
 import { useTelegram } from "@/services/telegram";
 import DailyMissionsModal from "@/components/DailyMissionsModal.vue";
-import DailyMissionButton from "@/components/DailyMissionButton.vue";
-import DailyMissionButtonTest from "@/components/DailyMissionButtonTest.vue";
 
 const scoreStore = useScoreStore();
 const router = useRouter();
