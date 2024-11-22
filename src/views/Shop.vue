@@ -10,11 +10,11 @@
       v-for="item in shopItems"
       :key="item.id"
     >
-      <div class="p-2 flex gap-2">
+      <div class="p-2 flex items-center gap-2">
         <img
-          src="https://icon-library.com/images/gifts-icon/gifts-icon-3.jpg"
+          :src="getImgURL(item.action)"
           alt=""
-          class="w-8 h-8 rounded-md"
+          class="w-12 h-12 object-cover rounded-md"
         />
         <div class="text-left">
           <p class="leading-none font-semibold text-sm text-gray-100 text-left">
@@ -123,6 +123,10 @@ function formatNumberWithK(number) {
   } else {
     return number;
   }
+}
+
+function getImgURL(image) {
+  return new URL(`/src/assets/icon-${image}.jpg`, import.meta.url).href;
 }
 async function buyItem(item) {
   if (!canAfford(item.cost)) {

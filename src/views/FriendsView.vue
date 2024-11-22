@@ -7,7 +7,7 @@
       <img
         src="https://cdn-icons-png.flaticon.com/512/9592/9592247.png"
         alt=""
-        class="absolute -bottom-2 -right-10 w-28 rotate-12"
+        class="absolute bottom-1 -right-7 w-28 rotate-12"
       />
       <img
         src="https://cdn-icons-png.flaticon.com/512/9592/9592247.png"
