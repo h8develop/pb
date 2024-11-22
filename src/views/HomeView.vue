@@ -3,16 +3,16 @@
     <!-- Верхняя панель с названием бота, профилем и кнопкой "О токене" -->
     <div class="flex gap-4 justify-between items-center mb-4">
       <div
-        class="rounded-full flex items-center bg-[#2a292e] py-0.5 pr-2.5 pl-1.5 border border-transparent text-sm text-white transition-all shadow-sm"
+        class="rounded-full flex flex-col items-center bg-[#2a292e] py-0.5 pr-2.5 pl-1.5 border border-transparent text-sm text-white transition-all shadow-sm"
       >
         <div class="">
           <img
-            alt="userAvatar"
+            alt="user"
             :src="userAvatar"
             class="h-8 w-8 rounded-full object-cover object-center"
           />
         </div>
-        <span>
+        <span class="text-[12px]">
           {{ userName }}
         </span>
       </div>
@@ -32,7 +32,7 @@
         <img src="../assets/valuta.png" alt="coin" class="valuta-icon" />
         <h2 class="score" id="score">{{ scoreStore.score }}</h2>
       </div>
-      <div class="earnings flex flex-col gap-2 mt-2">
+      <div class="earnings flex gap-2">
         <div class="earning-item inline-flex items-center">
           <img
             src="https://cdn-icons-png.flaticon.com/512/9382/9382196.png"
@@ -53,7 +53,7 @@
     </div>
 
     <!-- Монетка -->
-    <div class="circle mt-2">
+    <div class="circle">
       <img
         @click="increment"
         ref="img"

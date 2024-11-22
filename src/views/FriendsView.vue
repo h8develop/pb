@@ -28,7 +28,7 @@
             {{ referalText }}
           </span>
         </button>
-        <button
+        <!-- <button
           type="button"
           @click="copy"
           class="text-white bg-[#ffffff1a] hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-2xl text-sm px-6 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -49,7 +49,7 @@
               opacity="0.5"
             />
           </svg>
-        </button>
+        </button> -->
       </div>
     </div>
     <!-- Friends list -->
@@ -62,36 +62,23 @@
         </h3>
       </div>
       <div class="p-6 pt-0">
-        {{ friends }}
-        <ul class="space-y-4">
-          <li
-            class="flex items-center space-x-4"
-            v-for="friend in friends_mock"
-          >
+        <span v-if="!friends.length"> No friends yet </span>
+        <ul class="space-y-4" v-if="friends.length > 0">
+          <li class="flex items-center space-x-4" v-for="friend in friends">
             <span
               class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
             >
-              <img :src="friend.avatar" alt="" />
-              <span
-                class="flex h-full w-full items-center justify-center rounded-full bg-muted"
-                >AJ</span
-              ></span
-            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/3781/3781973.png"
+                alt="avatar"
+              />
+            </span>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-white truncate">
-                {{ friend.name }}
+                {{ friend.id }}
               </p>
               <p class="text-sm text-white truncate">{{ friend.status }}</p>
             </div>
-            <div
-              class="w-2.5 h-2.5 rounded-full bg-green-400"
-              v-if="friend.status == 'online'"
-            ></div>
-            <div
-              class="w-2.5 h-2.5 rounded-full bg-gray-400"
-              v-else-if="friend.status == 'offline'"
-            ></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-yellow-400" v-else></div>
           </li>
         </ul>
       </div>
@@ -110,34 +97,12 @@ const { user } = useTelegram();
 const referalText = ref("Your referal");
 const friends_mock = [
   {
-    id: 1,
-    name: "Alice Johnson",
-    avatar: "https://img.icons8.com/?size=96&id=23235&format=png",
-    status: "online",
+    id: "gitam",
+    name: true,
   },
   {
-    id: 2,
-    name: "Bob Smith",
-    avatar: "https://img.icons8.com/?size=96&id=23236&format=png",
-    status: "offline",
-  },
-  {
-    id: 3,
-    name: "Charlie Brown",
-    avatar: "https://img.icons8.com/?size=96&id=23237&format=png",
-    status: "online",
-  },
-  {
-    id: 4,
-    name: "Diana Prince",
-    avatar: "https://img.icons8.com/?size=96&id=23238&format=png",
-    status: "away",
-  },
-  {
-    id: 5,
-    name: "Ethan Hunt",
-    avatar: "https://img.icons8.com/?size=96&id=23239&format=png",
-    status: "online",
+    id: "gitam",
+    name: true,
   },
 ];
 
