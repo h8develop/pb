@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col p-4">
     <h1 class="text-center text-2xl font-extrabold dark:text-white mb-2">
-      Магазин улучшений
+      GoldenBust
     </h1>
 
     <div
@@ -63,43 +63,43 @@ const scoreStore = useScoreStore();
 const shopItems = ref([
   {
     id: 1,
-    name: "Восполнить энергию",
-    description: "",
+    name: "Батарейка",
+    description: "Восполни энергию до максимума",
     cost: 1000,
     action: "restoreEnergy",
   },
   {
     id: 2,
-    name: "Увеличить максимальную энергию до 2000",
+    name: "Аккумулятор ",
     description: "Увеличивает максимальную энергию до 2000 тапов",
     cost: 10000,
     action: "increaseMaxEnergyTo2000",
   },
   {
     id: 3,
-    name: "Кастомная кнопка",
+    name: "Путь самурая",
     description: "Кастомизируй внешний вид кнопки для кликов",
     cost: 1000000,
     action: "customButton",
   },
   {
     id: 4,
-    name: "Удвой заработок",
-    description: "Увеличь количество монет за тап в 2 раза",
+    name: "Двойная монета",
+    description: "Увеличь количество коинов - два за тап",
     cost: 10000,
     action: "increaseMultitap",
   },
   // Новые предметы
   {
     id: 5,
-    name: "Увеличить максимальную энергию до 4000",
+    name: "Электрощиток",
     description: "Увеличивает максимальную энергию до 4000 тапов",
     cost: 20000,
     action: "increaseMaxEnergyTo4000",
   },
   {
     id: 6,
-    name: "Увеличить максимальную энергию до 6000",
+    name: "Энергостанция",
     description: "Увеличивает максимальную энергию до 6000 тапов",
     cost: 30000,
     action: "increaseMaxEnergyTo6000",

@@ -1,23 +1,7 @@
 // src/stores/score.js
 import { defineStore } from 'pinia';
-import debounce from 'lodash.debounce';
 import supabase from '@/services/supabase';
 import { useTelegram } from '@/services/telegram';
-
-const debouncedUpdateScore = debounce(async (score, energy, userId) => {
-  try {
-    const { error } = await supabase
-      .from('users')
-      .update({ score, energy })
-      .eq('id', userId);
-
-    if (error) {
-      console.error('Ошибка при обновлении счёта в Supabase:', error);
-    }
-  } catch (err) {
-    console.error('Ошибка при обновлении счёта в Supabase:', err);
-  }
-}, 500);
 
 export const useScoreStore = defineStore('score', {
   state: () => ({
@@ -25,8 +9,9 @@ export const useScoreStore = defineStore('score', {
     score: 0,
     energy: 1000,
     maxEnergy: 1000,
-    multitapLevel: 0, // Начальный уровень мультитапа - 0
-    hasGoldenTrinket: false, // Новое свойство для золотого брелока
+    multitapLevel: 0,
+    hasGoldenTrinket: false,
+    lastEnergyUpdate: null,
   }),
 
   actions: {
@@ -50,7 +35,7 @@ export const useScoreStore = defineStore('score', {
         const { data, error } = await supabase
           .from('users')
           .select(
-            'id, score, energy, max_energy, multitap_level, has_golden_trinket'
+            'id, score, energy, max_energy, multitap_level, has_golden_trinket, last_energy_update'
           )
           .eq('telegram', telegramId)
           .single();
@@ -64,25 +49,60 @@ export const useScoreStore = defineStore('score', {
           this.maxEnergy = data.max_energy ?? 1000;
           this.multitapLevel = data.multitap_level ?? 0;
           this.hasGoldenTrinket = data.has_golden_trinket ?? false;
+          this.lastEnergyUpdate = data.last_energy_update ? new Date(data.last_energy_update) : new Date();
 
-          // Запускаем пассивный заработок, если брелок приобретён
-          if (this.hasGoldenTrinket) {
-            this.startPassiveEarnings();
-          }
+          // Восстановление энергии
+          await this.restoreEnergy();
         }
       } catch (err) {
         console.error('Ошибка при загрузке данных пользователя:', err);
       }
     },
 
+    async restoreEnergy() {
+      const currentTime = new Date();
+      const lastUpdate = this.lastEnergyUpdate || currentTime;
+  
+      const elapsedMinutes = Math.floor((currentTime - lastUpdate) / (1000 * 60));
+      const energyToAdd = elapsedMinutes; // 1 энергия за минуту
+  
+      if (energyToAdd <= 0) return;
+  
+      const newEnergy = Math.min(this.energy + energyToAdd, this.maxEnergy);
+      const actualEnergyAdded = newEnergy - this.energy;
+  
+      if (actualEnergyAdded > 0) {
+        this.energy = newEnergy;
+        this.lastEnergyUpdate = currentTime;
+  
+        await supabase
+          .from('users')
+          .update({
+            energy: this.energy,
+            last_energy_update: this.lastEnergyUpdate.toISOString(),
+          })
+          .eq('id', this.userId);
+      }
+    },
+
     async add(taps = 1) {
+      // Восстанавливаем энергию перед действием
+      await this.restoreEnergy();
+
       const coinsPerTap = this.multitapLevel > 0 ? this.multitapLevel + 1 : 1;
 
       if (this.energy >= taps) {
         this.score += taps * coinsPerTap;
         this.energy -= taps;
 
-        debouncedUpdateScore(this.score, this.energy, this.userId);
+        await supabase
+          .from('users')
+          .update({
+            score: this.score,
+            energy: this.energy,
+            last_energy_update: this.lastEnergyUpdate.toISOString(),
+          })
+          .eq('id', this.userId);
       } else {
         alert('У вас недостаточно энергии!');
       }
@@ -98,7 +118,8 @@ export const useScoreStore = defineStore('score', {
             max_energy: this.maxEnergy,
             energy: this.energy,
             multitap_level: this.multitapLevel,
-            has_golden_trinket: this.hasGoldenTrinket, // Обновляем поле золотого брелока
+            has_golden_trinket: this.hasGoldenTrinket,
+            last_energy_update: this.lastEnergyUpdate.toISOString(),
           })
           .eq('id', this.userId);
 
@@ -110,12 +131,9 @@ export const useScoreStore = defineStore('score', {
       }
     },
 
-    // Метод для пассивного заработка
+    // Метод для пассивного заработка (может быть реализован по аналогии)
     startPassiveEarnings() {
-      setInterval(() => {
-        this.score += 100;
-        this.updateScoreInSupabase();
-      }, 3600000); // 1 час = 3600000 миллисекунд
+      // Реализуйте пассивный доход при каждом взаимодействии пользователя
     },
   },
 });

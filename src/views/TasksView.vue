@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col p-4">
     <h1 class="text-center text-2xl font-extrabold dark:text-white mb-2">
-      Стань богаче
+      GoldenBust
     </h1>
     <h3 v-if="app.tasks.length === 0" class="loading-text mt-4">
       Loading tasks...

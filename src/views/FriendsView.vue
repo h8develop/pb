@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center flex-col p-4">
     <h1 class="text-center text-2xl font-extrabold dark:text-white mb-2">
-      Друзья
+      GoldenBust
     </h1>
     <div class="rounded-2xl p-10 bg-[#2a292e4d] relative mt-28">
       <img
@@ -22,7 +22,7 @@
         <button
           type="button"
           @click="copy"
-          class="text-white bg-[#ffffff1a] hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-2xl text-sm px-12 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          class="text-white bg-[#ffffff1a] hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-2xl text-sm w-full px-12 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           <span style="font-size: 12px">
             {{ referalText }}
@@ -58,11 +58,11 @@
     >
       <div class="flex flex-col space-y-1.5 p-6">
         <h3 class="text-2xl font-semibold leading-none tracking-tight">
-          Friends List
+          Друзья
         </h3>
       </div>
       <div class="p-6 pt-0">
-        <span v-if="!friends.length"> No friends yet </span>
+        <span v-if="!friends.length"> У тебя еще нет друзей </span>
         <ul class="space-y-4" v-if="friends.length > 0">
           <li class="flex items-center space-x-4" v-for="friend in friends">
             <span
@@ -94,7 +94,7 @@ import { ref, computed } from "vue";
 const app = useAppStore();
 const { user } = useTelegram();
 
-const referalText = ref("Your referal");
+const referalText = ref("Твоя персональная ссылка");
 const friends_mock = [
   {
     id: "gitam",
@@ -121,7 +121,7 @@ const friends = computed(() => {
 function copy() {
   const userId = user?.id || "unknown";
   navigator.clipboard.writeText(`https://t.me/testikbt_bot?start=${userId}`);
-  referalText.value = "Copied!";
+  referalText.value = "Поделись!";
 }
 </script>
 <style scoped>

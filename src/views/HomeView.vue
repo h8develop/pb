@@ -1,3 +1,4 @@
+<!-- src/views/HomeView.vue -->
 <template>
   <div class="home-container">
     <!-- Верхняя панель с названием бота, профилем и кнопкой "О токене" -->
@@ -5,7 +6,7 @@
       <div
         class="rounded-full flex flex-col items-center bg-[#2a292e] py-0.5 pr-2.5 pl-1.5 border border-transparent text-sm text-white transition-all shadow-sm"
       >
-        <div class="">
+        <div>
           <img
             alt="user"
             :src="userAvatar"
@@ -60,8 +61,11 @@
         id="circle"
         src="../assets/tap_bols.png"
         alt="Click Target"
+        :class="{ 'disabled': scoreStore.energy === 0 }"
+        :style="{ cursor: scoreStore.energy > 0 ? 'pointer' : 'not-allowed' }"
       />
     </div>
+
 
     <div
       class="flex gap-2 justify-between items-baseline absolute bottom-24 w-full pl-7 pb-9 pr-5"
@@ -92,7 +96,6 @@
     </div>
 
     <!-- Кнопка для ежедневных миссий -->
-
     <button
       class="daily-missions-button menu-button"
       @click="openDailyMissions"
@@ -114,7 +117,6 @@
           Здесь можно разместить информацию о токене, его особенности и другие
           важные детали.
         </p>
-        <!-- Добавляем класс 'menu-button' к кнопке "Закрыть" -->
         <button class="menu-button close-button" @click="closeTokenModal">
           Закрыть
         </button>
@@ -124,14 +126,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed, onMounted } from 'vue';
 import { useScoreStore } from "@/stores/score";
-import { useRouter } from "vue-router";
 import { useTelegram } from "@/services/telegram";
 import DailyMissionsModal from "@/components/DailyMissionsModal.vue";
 
 const scoreStore = useScoreStore();
-const router = useRouter();
 const { user } = useTelegram();
 const img = ref(null);
 
@@ -151,21 +151,14 @@ const isTokenModalOpen = ref(false);
 // Управление модальным окном для ежедневных миссий
 const isDailyModalOpen = ref(false);
 
-// Таймер (пример без функциональности)
-const timeLeft = ref("00:00:00");
-
 // Добавляем вычисляемое свойство tapEarnings
 const tapEarnings = computed(() => {
-  // Логика для вычисления дохода за тап
-  // Если мультитап не улучшен, доход за тап равен 1
   return scoreStore.multitapLevel > 0 ? scoreStore.multitapLevel + 1 : 1;
 });
 
-// Значения доходов (примерные значения, их можно получить из стора или вычислить)
+// Значения доходов
 const hourlyEarnings = computed(() => {
-  // Логика для вычисления дохода в час
-  // Здесь вы можете добавить свою формулу расчета
-  return 0; // Пример значения
+  return scoreStore.hasGoldenTrinket ? 100 : 0;
 });
 
 function openTokenModal() {
@@ -184,7 +177,7 @@ function goToDailyMissions() {
 }
 
 // Функция для обработки клика по монетке
-function increment(event) {
+async function increment(event) {
   const rect = event.target.getBoundingClientRect();
   const offsetX = event.clientX - rect.left - rect.width / 2;
   const offsetY = event.clientY - rect.top - rect.height / 2;
@@ -208,7 +201,7 @@ function increment(event) {
 
   // Обновляем расчет количества тапов
   const taps = 1; // За один тап пользователь тратит 1 энергию
-  scoreStore.add(taps);
+  await scoreStore.add(taps);
 }
 
 // Загружаем данные пользователя при монтировании компонента
@@ -219,6 +212,10 @@ onMounted(() => {
 
 <style scoped>
 /* Стили для модального окна "О токене" и "Ежедневных миссий" */
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
 .modal-overlay {
   position: fixed;
   top: 0;
