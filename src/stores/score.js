@@ -26,22 +26,22 @@ export const useScoreStore = defineStore('score', {
     async loadUserData() {
       const { user } = useTelegram();
       if (!user || !user.id) {
-        console.error('Ошибка: объект user или его id не определены');
+        console.error("Ошибка: объект user или его id не определены");
         return;
       }
-
+    
       const telegramId = Number(user.id);
       try {
         const { data, error } = await supabase
-          .from('users')
+          .from("users")
           .select(
-            'id, score, energy, max_energy, multitap_level, has_golden_trinket, last_energy_update'
+            "id, score, energy, max_energy, multitap_level, has_golden_trinket, last_energy_update, purchased_items"
           )
-          .eq('telegram', telegramId)
+          .eq("telegram", telegramId)
           .single();
-
+    
         if (error) {
-          console.error('Ошибка при загрузке данных пользователя из Supabase:', error);
+          console.error("Ошибка при загрузке данных пользователя из Supabase:", error);
         } else {
           this.userId = data.id;
           this.score = data.score ?? 0;
@@ -49,52 +49,46 @@ export const useScoreStore = defineStore('score', {
           this.maxEnergy = data.max_energy ?? 1000;
           this.multitapLevel = data.multitap_level ?? 0;
           this.hasGoldenTrinket = data.has_golden_trinket ?? false;
-          this.lastEnergyUpdate = data.last_energy_update ? new Date(data.last_energy_update) : new Date();
-
-          // Восстановление энергии
-          await this.restoreEnergy();
+          this.lastEnergyUpdate = data.last_energy_update
+            ? new Date(data.last_energy_update)
+            : new Date();
+          this.purchasedItems = data.purchased_items || {}; // Загружаем купленные предметы
         }
       } catch (err) {
-        console.error('Ошибка при загрузке данных пользователя:', err);
+        console.error("Ошибка при загрузке данных пользователя:", err);
       }
     },
 
     async restoreEnergy() {
       const currentTime = new Date();
-      const lastUpdate = this.lastEnergyUpdate || currentTime;
-  
-      const elapsedMinutes = Math.floor((currentTime - lastUpdate) / (1000 * 60));
-      const energyToAdd = elapsedMinutes; // 1 энергия за минуту
-  
-      if (energyToAdd <= 0) return;
-  
-      const newEnergy = Math.min(this.energy + energyToAdd, this.maxEnergy);
-      const actualEnergyAdded = newEnergy - this.energy;
-  
-      if (actualEnergyAdded > 0) {
-        this.energy = newEnergy;
-        this.lastEnergyUpdate = currentTime;
-  
+      const elapsedMinutes = Math.floor((currentTime - new Date(this.lastEnergyUpdate)) / (1000 * 60));
+    
+      if (elapsedMinutes > 0) {
+        const energyToAdd = Math.min(elapsedMinutes, this.maxEnergy - this.energy);
+        this.energy = Math.min(this.energy + energyToAdd, this.maxEnergy); // Не превышаем maxEnergy
+        this.lastEnergyUpdate = currentTime.toISOString();
+    
+        // Сохранение обновлений в Supabase
         await supabase
           .from('users')
           .update({
             energy: this.energy,
-            last_energy_update: this.lastEnergyUpdate.toISOString(),
+            last_energy_update: this.lastEnergyUpdate,
           })
           .eq('id', this.userId);
       }
-    },
+    }
+    ,
 
     async add(taps = 1) {
-      // Восстанавливаем энергию перед действием
       await this.restoreEnergy();
-
+    
       const coinsPerTap = this.multitapLevel > 0 ? this.multitapLevel + 1 : 1;
-
+    
       if (this.energy >= taps) {
         this.score += taps * coinsPerTap;
         this.energy -= taps;
-
+    
         await supabase
           .from('users')
           .update({
@@ -119,7 +113,9 @@ export const useScoreStore = defineStore('score', {
             energy: this.energy,
             multitap_level: this.multitapLevel,
             has_golden_trinket: this.hasGoldenTrinket,
-            last_energy_update: this.lastEnergyUpdate.toISOString(),
+            last_energy_update: this.lastEnergyUpdate
+              ? this.lastEnergyUpdate.toISOString()
+              : null,
           })
           .eq('id', this.userId);
 

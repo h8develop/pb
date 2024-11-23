@@ -27,19 +27,20 @@
       </div>
       <div class="flex justify-end min-w-24">
         <button
-          class="candy green inline-flex w-full py-1 px-2 cursor-pointer items-center justify-center bg-red-500 shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 text-white rounded-full"
-          @click="buyItem(item)"
-          :disabled="!canAfford(item.cost)"
-        >
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/272/272525.png"
-            alt=""
-            class="h-4 w-4"
-          />
-          <span class="text-sm font-light">
-            &nbsp;{{ formatNumberWithK(item.cost) }}
-          </span>
-        </button>
+  class="candy green inline-flex w-full py-1 px-2 cursor-pointer items-center justify-center bg-red-500 shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 text-white rounded-full"
+  @click="buyItem(item)"
+  :disabled="scoreStore.purchasedItems[item.id] && ![1, 3].includes(item.id)"
+>
+  <img
+    src="https://cdn-icons-png.flaticon.com/512/272/272525.png"
+    alt=""
+    class="h-4 w-4"
+  />
+  <span class="text-sm font-light">
+    &nbsp;{{ formatNumberWithK(item.cost) }}
+  </span>
+</button>
+
       </div>
       <!-- <button
               class="flex-no-shrink cursor-not-allowed bg-red-400 px-2 py-1 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-400 text-white rounded-full"
@@ -57,6 +58,8 @@
 <script setup>
 import { ref } from "vue";
 import { useScoreStore } from "@/stores/score";
+import supabase from "@/services/supabase";
+
 
 const scoreStore = useScoreStore();
 
@@ -129,30 +132,45 @@ function getImgURL(image) {
   return new URL(`/src/assets/icon-${image}.jpg`, import.meta.url).href;
 }
 async function buyItem(item) {
+  const purchasedItems = scoreStore.purchasedItems || {};
+
+  // Проверяем, куплен ли предмет
+  if (purchasedItems[item.id] && ![1, 3].includes(item.id)) {
+    alert("Вы уже купили этот предмет!");
+    return;
+  }
+
+  // Проверяем, достаточно ли коинов для покупки
   if (!canAfford(item.cost)) {
     alert("Недостаточно коинов для покупки");
     return;
   }
 
-  // Вычитаем стоимость
+  // Списываем стоимость
   scoreStore.score -= item.cost;
 
-  // Выполняем действие
+  // Выполняем действие в зависимости от action
   switch (item.action) {
     case "restoreEnergy":
       scoreStore.energy = scoreStore.maxEnergy;
       break;
     case "increaseMaxEnergyTo2000":
-      scoreStore.maxEnergy = 2000;
+      if (scoreStore.maxEnergy < 2000) {
+        scoreStore.maxEnergy = 2000;
+      }
       break;
     case "increaseMaxEnergyTo4000":
-      scoreStore.maxEnergy = 4000;
+      if (scoreStore.maxEnergy < 4000) {
+        scoreStore.maxEnergy = 4000;
+      }
       break;
     case "increaseMaxEnergyTo6000":
-      scoreStore.maxEnergy = 6000;
+      if (scoreStore.maxEnergy < 6000) {
+        scoreStore.maxEnergy = 6000;
+      }
       break;
     case "customButton":
-      // Логика кастомизации кнопки
+      alert("Функционал кастомизации кнопки в разработке.");
       break;
     case "increaseMultitap":
       scoreStore.multitapLevel += 1;
@@ -161,13 +179,37 @@ async function buyItem(item) {
       scoreStore.hasGoldenTrinket = true;
       break;
     default:
+      alert("Неизвестный товар.");
       break;
   }
 
-  // Обновляем данные в Supabase
-  await scoreStore.updateScoreInSupabase();
-  await scoreStore.updateEnergyInSupabase();
+  // Обновляем список купленных предметов
+  purchasedItems[item.id] = true;
+  scoreStore.purchasedItems = purchasedItems;
+
+  // Сохраняем изменения в Supabase
+  const { error } = await supabase
+    .from("users")
+    .update({
+      purchased_items: purchasedItems,
+      score: scoreStore.score,
+      energy: scoreStore.energy,
+      max_energy: scoreStore.maxEnergy,
+      multitap_level: scoreStore.multitapLevel,
+      has_golden_trinket: scoreStore.hasGoldenTrinket,
+    })
+    .eq("id", scoreStore.userId);
+
+  if (error) {
+    console.error("Ошибка при обновлении данных пользователя в Supabase:", error);
+    alert("Ошибка сохранения данных. Попробуйте снова.");
+    return;
+  }
+
+  alert("Покупка успешно завершена!");
 }
+
+
 </script>
 
 <style scoped>

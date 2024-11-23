@@ -49,7 +49,7 @@
       </div>
       <!-- Claim Button -->
       <div>
-        <button class="mission-button menu-button mt-4">требовать</button>
+        <button class="mission-button menu-button mt-4">Получить</button>
       </div>
     </div>
 

@@ -182,7 +182,7 @@ async function increment(event) {
   const offsetX = event.clientX - rect.left - rect.width / 2;
   const offsetY = event.clientY - rect.top - rect.height / 2;
 
-  const DEG = 60;
+  const DEG =45;
   const tiltX = (offsetY / rect.height) * DEG;
   const tiltY = (offsetX / rect.width) * -DEG;
   img.value.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
@@ -325,7 +325,7 @@ onMounted(() => {
   background-repeat: no-repeat;
   z-index: 1;
 
-  /* top: -0.1rem; Регулируем положение кнопки над меню */
+
 }
 
 .daily-missions-button:hover {
