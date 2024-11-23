@@ -1,56 +1,47 @@
 <template>
   <div class="flex flex-col p-4">
     <h1 class="text-center text-2xl font-extrabold dark:text-white mb-2">
-      GoldenBust
+      GoldenBust Shop
     </h1>
 
     <div
-      class="p-2 shadow-md hover:shodow-lg rounded-2xl mb-2 flex justify-between items-center"
-      style="background: rgba(42, 41, 46, 0.3)"
       v-for="item in shopItems"
       :key="item.id"
+      class="p-2 shadow-md hover:shadow-lg rounded-2xl mb-2 flex justify-between items-center"
+      style="background: rgba(42, 41, 46, 0.3)"
     >
       <div class="p-2 flex items-center gap-2">
         <img
           :src="getImgURL(item.action)"
-          alt=""
+          alt="Item Icon"
           class="w-12 h-12 object-cover rounded-md"
         />
         <div class="text-left">
-          <p class="leading-none font-semibold text-sm text-gray-100 text-left">
+          <p class="font-semibold text-sm text-gray-100">
             {{ item.name }}
           </p>
-          <p class="text-sm font-light leading-none mt-1">
+          <p class="text-sm font-light mt-1">
             {{ item.description }}
           </p>
         </div>
       </div>
+
       <div class="flex justify-end min-w-24">
         <button
-  class="candy green inline-flex w-full py-1 px-2 cursor-pointer items-center justify-center bg-red-500 shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 text-white rounded-full"
-  @click="buyItem(item)"
-  :disabled="scoreStore.purchasedItems[item.id] && ![1, 3].includes(item.id)"
->
-  <img
-    src="https://cdn-icons-png.flaticon.com/512/272/272525.png"
-    alt=""
-    class="h-4 w-4"
-  />
-  <span class="text-sm font-light">
-    &nbsp;{{ formatNumberWithK(item.cost) }}
-  </span>
-</button>
-
+          class="candy green inline-flex w-full py-1 px-2 cursor-pointer items-center justify-center bg-red-500 shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 text-white rounded-full"
+          @click="buyItem(item)"
+          :disabled="!canBuyItem(item)"
+        >
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/272/272525.png"
+            alt="Coin Icon"
+            class="h-4 w-4"
+          />
+          <span class="text-sm font-light">
+            &nbsp;{{ formatNumberWithK(item.cost) }}
+          </span>
+        </button>
       </div>
-      <!-- <button
-              class="flex-no-shrink cursor-not-allowed bg-red-400 px-2 py-1 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-400 text-white rounded-full"
-              disabled
-            >
-              Купить
-            </button> -->
-      <!-- <button @click="buyItem(item)" :disabled="!canAfford(item.cost)">
-              Купить
-            </button> -->
     </div>
   </div>
 </template>
@@ -60,9 +51,9 @@ import { ref } from "vue";
 import { useScoreStore } from "@/stores/score";
 import supabase from "@/services/supabase";
 
-
 const scoreStore = useScoreStore();
 
+// Описание доступных предметов
 const shopItems = ref([
   {
     id: 1,
@@ -73,7 +64,7 @@ const shopItems = ref([
   },
   {
     id: 2,
-    name: "Аккумулятор ",
+    name: "Аккумулятор",
     description: "Увеличивает максимальную энергию до 2000 тапов",
     cost: 10000,
     action: "increaseMaxEnergyTo2000",
@@ -92,7 +83,6 @@ const shopItems = ref([
     cost: 10000,
     action: "increaseMultitap",
   },
-  // Новые предметы
   {
     id: 5,
     name: "Электрощиток",
@@ -116,61 +106,53 @@ const shopItems = ref([
   },
 ]);
 
-function canAfford(cost) {
-  return scoreStore.score >= cost;
-}
-function formatNumberWithK(number) {
-  if (number >= 1000) {
-    // return (number / 1000).toFixed(1) + "K";
-    return `${Math.round(number / 1000)}k`;
-  } else {
-    return number;
+// Проверка на доступность покупки
+function canBuyItem(item) {
+  if (scoreStore.purchasedItems[item.id] && ![1, 3].includes(item.id)) {
+    return false; // Уникальные предметы уже куплены
   }
+  return scoreStore.score >= item.cost;
 }
 
-function getImgURL(image) {
-  return new URL(`/src/assets/icon-${image}.jpg`, import.meta.url).href;
+// Форматирование чисел
+function formatNumberWithK(number) {
+  return number >= 1000 ? `${Math.round(number / 1000)}k` : number;
 }
+
+// Получение иконки предмета
+function getImgURL(action) {
+  return new URL(`/src/assets/icon-${action}.jpg`, import.meta.url).href;
+}
+
+// Покупка предмета
 async function buyItem(item) {
   const purchasedItems = scoreStore.purchasedItems || {};
 
-  // Проверяем, куплен ли предмет
-  if (purchasedItems[item.id] && ![1, 3].includes(item.id)) {
-    alert("Вы уже купили этот предмет!");
+  // Проверяем, можно ли купить предмет
+  if (!canBuyItem(item)) {
+    alert("Недостаточно средств или предмет уже куплен!");
     return;
   }
 
-  // Проверяем, достаточно ли коинов для покупки
-  if (!canAfford(item.cost)) {
-    alert("Недостаточно коинов для покупки");
-    return;
-  }
-
-  // Списываем стоимость
+  // Списание стоимости
   scoreStore.score -= item.cost;
 
-  // Выполняем действие в зависимости от action
+  // Выполнение действия
   switch (item.action) {
     case "restoreEnergy":
       scoreStore.energy = scoreStore.maxEnergy;
       break;
     case "increaseMaxEnergyTo2000":
-      if (scoreStore.maxEnergy < 2000) {
-        scoreStore.maxEnergy = 2000;
-      }
+      if (scoreStore.maxEnergy < 2000) scoreStore.maxEnergy = 2000;
       break;
     case "increaseMaxEnergyTo4000":
-      if (scoreStore.maxEnergy < 4000) {
-        scoreStore.maxEnergy = 4000;
-      }
+      if (scoreStore.maxEnergy < 4000) scoreStore.maxEnergy = 4000;
       break;
     case "increaseMaxEnergyTo6000":
-      if (scoreStore.maxEnergy < 6000) {
-        scoreStore.maxEnergy = 6000;
-      }
+      if (scoreStore.maxEnergy < 6000) scoreStore.maxEnergy = 6000;
       break;
     case "customButton":
-      alert("Функционал кастомизации кнопки в разработке.");
+      alert("Функция кастомизации в разработке.");
       break;
     case "increaseMultitap":
       scoreStore.multitapLevel += 1;
@@ -179,62 +161,45 @@ async function buyItem(item) {
       scoreStore.hasGoldenTrinket = true;
       break;
     default:
-      alert("Неизвестный товар.");
-      break;
+      alert("Неизвестное действие.");
   }
 
-  // Обновляем список купленных предметов
+  // Обновление списка купленных предметов
   purchasedItems[item.id] = true;
   scoreStore.purchasedItems = purchasedItems;
 
-  // Сохраняем изменения в Supabase
+  // Сохранение в Supabase
   const { error } = await supabase
     .from("users")
     .update({
       purchased_items: purchasedItems,
       score: scoreStore.score,
-      energy: scoreStore.energy,
       max_energy: scoreStore.maxEnergy,
+      energy: scoreStore.energy,
       multitap_level: scoreStore.multitapLevel,
       has_golden_trinket: scoreStore.hasGoldenTrinket,
     })
     .eq("id", scoreStore.userId);
 
   if (error) {
-    console.error("Ошибка при обновлении данных пользователя в Supabase:", error);
-    alert("Ошибка сохранения данных. Попробуйте снова.");
+    console.error("Ошибка обновления данных в Supabase:", error);
+    alert("Ошибка при сохранении данных. Попробуйте позже.");
     return;
   }
 
   alert("Покупка успешно завершена!");
 }
-
-
 </script>
 
 <style scoped>
+/* Добавлены стили для улучшенной визуализации */
 .shop-container {
   padding: 20px;
 }
 
-.items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.item {
-  flex: 1 0 45%;
-  border: 1px solid #ccc;
-  padding: 15px;
-  border-radius: 5px;
-}
-
-.item h3 {
-  margin-bottom: 10px;
-}
-
-.item button {
-  margin-top: 10px;
+button:disabled {
+  background-color: #7e7e7e;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style>

@@ -83,17 +83,14 @@ function getButtonText(day) {
   if (day < currentLevel.value) {
     return "Выполнено";
   } else if (day === currentLevel.value) {
-    // return `День ${day}: ${getReward(day)} коинов`;
     return `День ${day}`;
   } else {
-    // return `День ${day}: ${getReward(day)} коинов`;
-
     return `День ${day}`;
   }
 }
 
 function getReward(day) {
-  return day * 10;
+  return day * 10; // Формула расчета награды за день
 }
 
 function canCollect(day) {
@@ -104,13 +101,14 @@ async function collectReward(day) {
   if (!canCollect(day)) return;
 
   const reward = getReward(day);
-  await scoreStore.addScore(reward);
+  await scoreStore.add(reward); // Используем метод add для добавления очков
 
   await userStore.updateDailyMission(day + 1);
 
   currentLevel.value = day + 1;
 }
 </script>
+
 
 <style scoped>
 .modal-overlay {
