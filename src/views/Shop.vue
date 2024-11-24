@@ -51,6 +51,8 @@ import { ref } from "vue";
 import { useScoreStore } from "@/stores/score";
 import supabase from "@/services/supabase";
 
+
+const isButtonSelectionOpen = ref(false);
 const scoreStore = useScoreStore();
 
 // Описание доступных предметов
@@ -70,20 +72,6 @@ const shopItems = ref([
     action: "increaseMaxEnergyTo2000",
   },
   {
-    id: 3,
-    name: "Путь самурая",
-    description: "Кастомизируй внешний вид кнопки для кликов",
-    cost: 1000000,
-    action: "customButton",
-  },
-  {
-    id: 4,
-    name: "Двойная монета",
-    description: "Увеличь количество коинов - два за тап",
-    cost: 10000,
-    action: "increaseMultitap",
-  },
-  {
     id: 5,
     name: "Электрощиток",
     description: "Увеличивает максимальную энергию до 4000 тапов",
@@ -98,11 +86,25 @@ const shopItems = ref([
     action: "increaseMaxEnergyTo6000",
   },
   {
+    id: 4,
+    name: "Двойная монета",
+    description: "Увеличь количество коинов - два за тап",
+    cost: 10000,
+    action: "increaseMultitap",
+  },
+  {
     id: 7,
     name: "Золотой брелок",
     description: "Дает пассивный заработок в 100 монет каждый час",
     cost: 50000,
     action: "goldenTrinket",
+  },
+  {
+    id: 3,
+    name: "Путь самурая",
+    description: "Кастомизируй внешний вид кнопки для кликов",
+    cost: 1000000,
+    action: "customButton",
   },
 ]);
 
@@ -151,8 +153,8 @@ async function buyItem(item) {
     case "increaseMaxEnergyTo6000":
       if (scoreStore.maxEnergy < 6000) scoreStore.maxEnergy = 6000;
       break;
-    case "customButton":
-      alert("Функция кастомизации в разработке.");
+      case "customButton":
+      scoreStore.hasCustomButton = true;
       break;
     case "increaseMultitap":
       scoreStore.multitapLevel += 1;
@@ -178,9 +180,9 @@ async function buyItem(item) {
       energy: scoreStore.energy,
       multitap_level: scoreStore.multitapLevel,
       has_golden_trinket: scoreStore.hasGoldenTrinket,
+      has_custom_button: scoreStore.hasCustomButton, // Добавлено
     })
     .eq("id", scoreStore.userId);
-
   if (error) {
     console.error("Ошибка обновления данных в Supabase:", error);
     alert("Ошибка при сохранении данных. Попробуйте позже.");

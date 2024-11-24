@@ -53,20 +53,17 @@
       </div>
     </div>
 
-    <!-- Монетка -->
     <div class="circle">
-      <img
-        @click="increment"
-        ref="img"
-        id="circle"
-        src="../assets/tap_bols.png"
-        alt="Click Target"
-        :class="{ 'disabled': scoreStore.energy === 0 }"
-        :style="{ cursor: scoreStore.energy > 0 ? 'pointer' : 'not-allowed' }"
-      />
-    </div>
-
-
+    <img
+      @click="increment"
+      ref="img"
+      id="circle"
+      :src="clickButtonImage"
+      alt="Click Target"
+      :class="{ 'disabled': scoreStore.energy === 0 }"
+      :style="{ cursor: scoreStore.energy > 0 ? 'pointer' : 'not-allowed' }"
+    />
+  </div>
     <div
       class="flex gap-2 justify-between items-baseline absolute bottom-24 w-full pl-7 pb-9 pr-5"
     >
@@ -130,6 +127,10 @@ import { ref, computed, onMounted } from 'vue';
 import { useScoreStore } from "@/stores/score";
 import { useTelegram } from "@/services/telegram";
 import DailyMissionsModal from "@/components/DailyMissionsModal.vue";
+import tapBolsImage from '../assets/tap_bols.png';
+import customButtonImage from '../assets/custom_button.png';
+
+
 
 const scoreStore = useScoreStore();
 const { user } = useTelegram();
@@ -175,6 +176,17 @@ function openDailyMissions() {
 function goToDailyMissions() {
   window.open("https://t.me/testimGOLD/2", "_blank");
 }
+
+
+const clickButtonImage = computed(() => {
+  if (scoreStore.hasCustomButton) {
+    return customButtonImage;
+  } else {
+    return tapBolsImage;
+  }
+});
+
+
 
 // Функция для обработки клика по монетке
 async function increment(event) {

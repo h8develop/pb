@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import supabase from '../services/supabase';
-import { useTelegram } from '../services/telegram';
+import supabase from '@/services/supabase';
+import { useTelegram } from '@/services/telegram';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -32,7 +32,51 @@ export const useUserStore = defineStore('user', {
 
       this.userId = data.id;
       this.dailyMissionLevel = data.daily_mission_level || 1;
-      this.dailyMissionDate = data.daily_mission_date;
+      this.dailyMissionDate = data.daily_mission_date; // Загружаем дату из базы данных
+
+      // Проверяем, прошел ли день с последнего сбора награды
+      const today = new Date();
+      const lastCollectedDate = this.dailyMissionDate ? new Date(this.dailyMissionDate) : null;
+
+      let shouldReset = false;
+
+      if (lastCollectedDate) {
+        shouldReset =
+          today.getFullYear() > lastCollectedDate.getFullYear() ||
+          today.getMonth() > lastCollectedDate.getMonth() ||
+          today.getDate() > lastCollectedDate.getDate();
+      }
+
+      if (shouldReset) {
+        await this.resetDailyMission();
+      }
+    },
+
+    async resetDailyMission() {
+      if (!this.userId) {
+        console.error('userId не определен');
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('users')
+          .update({
+            daily_mission_level: 1,
+            daily_mission_date: null,
+          })
+          .eq('id', this.userId);
+
+        if (error) {
+          console.error('Ошибка сброса ежедневной миссии:', error);
+        } else {
+          this.dailyMissionLevel = 1;
+          this.dailyMissionDate = null;
+          console.log('Ежедневная миссия успешно сброшена.');
+        }
+      } catch (err) {
+        console.error('Ошибка сброса ежедневной миссии:', err);
+      }
     },
 
     async updateDailyMission(newLevel) {
@@ -41,7 +85,7 @@ export const useUserStore = defineStore('user', {
         return;
       }
 
-      const today = new Date().toISOString().split('T')[0]; // Формат YYYY-MM-DD
+      const today = new Date().toISOString(); // Полный формат даты с временем
 
       const { error } = await supabase
         .from('users')
@@ -55,7 +99,7 @@ export const useUserStore = defineStore('user', {
         console.error('Ошибка обновления ежедневной миссии:', error);
       } else {
         this.dailyMissionLevel = newLevel;
-        this.dailyMissionDate = today;
+        this.dailyMissionDate = today; // Обновляем локально
       }
     },
   },

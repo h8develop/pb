@@ -33,7 +33,7 @@
           :disabled="!canCollect(day)"
         >
           <span class="font-bold">
-            {{ getButtonText(day) }}
+            {{ loadingDay === day ? 'Получение...' : getButtonText(day) }}
           </span>
           <img
             src="https://cdn-icons-png.flaticon.com/512/5525/5525147.png"
@@ -43,22 +43,25 @@
           <span
             class="text-sm font-normal mt-1 py-0.5 px-4 bg-yellow-500 rounded-full"
           >
-            {{ day * 10 }}
+            {{ day * 1000 }}
           </span>
         </button>
       </div>
-      <!-- Claim Button -->
-      <div>
-        <button class="mission-button menu-button mt-4">Получить</button>
-      </div>
+      
+      <!-- Временная кнопка сброса миссий (только для разработки) -->
+      <button
+        v-if="isDev"
+        @click="resetMission"
+        class="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+      >
+        Сбросить миссию (DEV)
+      </button>
     </div>
-
-    <!--  -->
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useUserStore } from "@/stores/userStore";
 import { useScoreStore } from "@/stores/score";
 import { defineEmits } from "vue";
@@ -69,10 +72,17 @@ const userStore = useUserStore();
 const scoreStore = useScoreStore();
 
 const currentLevel = ref(1);
+const loadingDay = ref(null);
+
+// Проверка на режим разработки
+const isDev = import.meta.env.MODE === 'development';
 
 onMounted(async () => {
   await userStore.loadUserData();
   currentLevel.value = userStore.dailyMissionLevel;
+
+  console.log('Daily Mission Level:', currentLevel.value);
+  console.log('Daily Mission Date:', userStore.dailyMissionDate);
 });
 
 function close() {
@@ -85,30 +95,70 @@ function getButtonText(day) {
   } else if (day === currentLevel.value) {
     return `День ${day}`;
   } else {
-    return `День ${day}`;
+    return `День ${day} `;
   }
 }
 
 function getReward(day) {
-  return day * 10; // Формула расчета награды за день
+  return day * 1000; // Формула расчета награды за день
 }
 
 function canCollect(day) {
-  return day === currentLevel.value;
+  const today = new Date();
+  const lastCollectedDate = userStore.dailyMissionDate ? new Date(userStore.dailyMissionDate) : null;
+
+  let isTodayCollected = false;
+
+  if (lastCollectedDate) {
+    isTodayCollected =
+      today.getFullYear() === lastCollectedDate.getFullYear() &&
+      today.getMonth() === lastCollectedDate.getMonth() &&
+      today.getDate() === lastCollectedDate.getDate();
+  }
+
+  console.log('Today:', today.toISOString().split('T')[0]);
+  console.log('Last Collected Date:', lastCollectedDate ? lastCollectedDate.toISOString().split('T')[0] : 'null');
+  console.log('Is Today Collected:', isTodayCollected);
+
+  return day === currentLevel.value && !isTodayCollected && loadingDay.value !== day;
 }
 
 async function collectReward(day) {
-  if (!canCollect(day)) return;
+  if (!canCollect(day)) {
+    console.log(`Нельзя собрать награду за день ${day}`);
+    return;
+  }
+
+  loadingDay.value = day; // Устанавливаем состояние загрузки
+  console.log(`Сбор награды за день ${day}`);
 
   const reward = getReward(day);
-  await scoreStore.add(reward); // Используем метод add для добавления очков
 
-  await userStore.updateDailyMission(day + 1);
+  try {
+    await scoreStore.addScore(reward);
+    console.log(`Награда ${reward} успешно добавлена`);
 
-  currentLevel.value = day + 1;
+    const newLevel = currentLevel.value + 1;
+    await userStore.updateDailyMission(newLevel);
+    console.log(`Уровень миссии обновлен до ${newLevel}`);
+
+    currentLevel.value = newLevel;
+  } catch (error) {
+    console.error('Ошибка при получении награды:', error);
+    alert('Произошла ошибка при получении награды. Пожалуйста, попробуйте снова.');
+  } finally {
+    loadingDay.value = null; // Сбрасываем состояние загрузки
+    console.log('Состояние загрузки сброшено');
+  }
+}
+
+// Временная функция для сброса миссии
+async function resetMission() {
+  await userStore.resetDailyMission();
+  currentLevel.value = 1;
+  alert('Ежедневная миссия сброшена.');
 }
 </script>
-
 
 <style scoped>
 .modal-overlay {
@@ -125,12 +175,7 @@ async function collectReward(day) {
 }
 
 .modal-content {
-  background-color: rgba(
-    42,
-    41,
-    46,
-    0.9
-  ); /* Полупрозрачный фон, аналогичный меню */
+  background-color: rgba(42, 41, 46, 0.9); /* Полупрозрачный фон, аналогичный меню */
   padding: 20px 30px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -158,12 +203,7 @@ async function collectReward(day) {
 }
 
 .menu-button:hover {
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.25
-  ); /* Более яркий фон при наведении */
+  background-color: rgba(255, 255, 255, 0.25); /* Более яркий фон при наведении */
 }
 
 .close-button {
@@ -172,17 +212,13 @@ async function collectReward(day) {
 
 /* Стили для кнопок миссий */
 .missions-grid {
-  /* display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0; */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 
 .mission-button {
-  /* flex: 1 0 45%; Сделать кнопки более широкими */
-  /* padding: 10px; */
   border: none;
-  /* border-radius: 8px; */
   font-size: 12px;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
@@ -191,10 +227,20 @@ async function collectReward(day) {
 .mission-button.completed {
   background-color: gray;
   color: white;
+  cursor: default;
 }
 
 .mission-button.active {
   background-color: #968a4c;
   color: white;
+}
+
+.mission-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-reset {
+  /* Стили для временной кнопки сброса */
 }
 </style>

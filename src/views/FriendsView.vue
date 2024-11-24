@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center flex-col p-4">
     <h1 class="text-center text-2xl font-extrabold dark:text-white mb-2">
-      GoldenBust
+      GoldenBust Friends
     </h1>
     <div class="rounded-2xl p-10 bg-[#2a292e4d] relative mt-28">
       <img

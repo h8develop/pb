@@ -10,8 +10,11 @@ export const useScoreStore = defineStore('score', {
     maxEnergy: 1000,
     multitapLevel: 0,
     hasGoldenTrinket: false,
+    hasCustomButton: false, // Новое свойство
     lastEnergyUpdate: null,
+    purchasedItems: {},
   }),
+
 
   actions: {
     setUserId(id) {
@@ -32,12 +35,12 @@ export const useScoreStore = defineStore('score', {
       const telegramId = Number(user.id);
       try {
         const { data, error } = await supabase
-          .from('users')
-          .select(
-            'id, score, energy, max_energy, multitap_level, has_golden_trinket, last_energy_update, purchased_items'
-          )
-          .eq('telegram', telegramId)
-          .single();
+        .from('users')
+        .select(
+          'id, score, energy, max_energy, multitap_level, has_golden_trinket, has_custom_button, last_energy_update, purchased_items'
+        )
+        .eq('telegram', telegramId)
+        .single();
 
         if (error) {
           console.error('Ошибка при загрузке данных пользователя из Supabase:', error);
@@ -47,8 +50,10 @@ export const useScoreStore = defineStore('score', {
           this.energy = data.energy ?? 0;
           this.maxEnergy = data.max_energy ?? 1000;
           this.multitapLevel = data.multitap_level ?? 0;
+          this.hasCustomButton = data.has_custom_button ?? false;
           this.hasGoldenTrinket = data.has_golden_trinket ?? false;
           this.lastEnergyUpdate = data.last_energy_update
+          
             ? new Date(data.last_energy_update)
             : new Date();
           this.purchasedItems = data.purchased_items || {}; // Загружаем купленные предметы
@@ -99,6 +104,19 @@ export const useScoreStore = defineStore('score', {
       }
     },
 
+    // Новый метод для добавления очков без уменьшения энергии
+    async addScore(amount) {
+      this.score += amount;
+
+      // Обновляем данные в Supabase
+      await supabase
+        .from('users')
+        .update({
+          score: this.score,
+        })
+        .eq('id', this.userId);
+    },
+
     async updatePurchasedItems(newItemId) {
       if (!this.userId) return;
 
@@ -134,7 +152,7 @@ export const useScoreStore = defineStore('score', {
 
     async updateScoreInSupabase() {
       if (!this.userId) return;
-
+    
       try {
         const { error } = await supabase
           .from('users')
@@ -144,12 +162,13 @@ export const useScoreStore = defineStore('score', {
             energy: this.energy,
             multitap_level: this.multitapLevel,
             has_golden_trinket: this.hasGoldenTrinket,
+            has_custom_button: this.hasCustomButton, // Добавлено
             last_energy_update: this.lastEnergyUpdate
               ? this.lastEnergyUpdate.toISOString()
               : null,
           })
           .eq('id', this.userId);
-
+    
         if (error) {
           console.error('Ошибка при обновлении счёта в Supabase:', error);
         }
