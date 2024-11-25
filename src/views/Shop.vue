@@ -67,42 +67,42 @@ const shopItems = ref([
   {
     id: 2,
     name: "Аккумулятор",
-    description: "Увеличивает максимальную энергию до 2000 тапов",
+    description: "Увеличь максимальную энергию до 2000 ",
     cost: 10000,
     action: "increaseMaxEnergyTo2000",
   },
   {
     id: 5,
     name: "Электрощиток",
-    description: "Увеличивает максимальную энергию до 4000 тапов",
+    description: "Увеличь максимальную энергию до 4000",
     cost: 20000,
     action: "increaseMaxEnergyTo4000",
   },
   {
     id: 6,
     name: "Энергостанция",
-    description: "Увеличивает максимальную энергию до 6000 тапов",
-    cost: 30000,
+    description: "Увеличь максимальную энергию до 6000",
+    cost: 45000,
     action: "increaseMaxEnergyTo6000",
   },
   {
     id: 4,
     name: "Двойная монета",
-    description: "Увеличь количество коинов - два за тап",
-    cost: 10000,
+    description: "Каждое нажатие дает по две монеты",
+    cost: 100000,
     action: "increaseMultitap",
   },
   {
     id: 7,
     name: "Золотой брелок",
     description: "Дает пассивный заработок в 100 монет каждый час",
-    cost: 50000,
+    cost: 500000,
     action: "goldenTrinket",
   },
   {
     id: 3,
     name: "Путь самурая",
-    description: "Кастомизируй внешний вид кнопки для кликов",
+    description: "Поменяй кнопку и стань избранным",
     cost: 1000000,
     action: "customButton",
   },
@@ -118,12 +118,12 @@ function canBuyItem(item) {
 
 // Форматирование чисел
 function formatNumberWithK(number) {
-  return number >= 1000 ? `${Math.round(number / 1000)}k` : number;
+  return number >= 1000 ? `${Math.round(number / 1000)}K` : number;
 }
 
 // Получение иконки предмета
 function getImgURL(action) {
-  return new URL(`/src/assets/icon-${action}.jpg`, import.meta.url).href;
+  return new URL(`/src/assets/icon-${action}.png`, import.meta.url).href;
 }
 
 // Покупка предмета

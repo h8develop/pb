@@ -4,7 +4,7 @@
       GoldenBust
     </h1>
     <h3 v-if="app.tasks.length === 0" class="loading-text mt-4">
-      Loading tasks...
+      Загружаем задания
     </h3>
 
     <div

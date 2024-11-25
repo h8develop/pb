@@ -3,7 +3,7 @@
     <h1 class="text-center text-2xl font-extrabold dark:text-white mb-2">
       GoldenBust Friends
     </h1>
-    <div class="rounded-2xl p-10 bg-[#2a292e4d] relative mt-28">
+    <div class="rounded-2xl p-10 bg-[#2a292e4d] relative mt-20">
       <img
         src="https://cdn-icons-png.flaticon.com/512/9592/9592247.png"
         alt=""
@@ -16,7 +16,7 @@
       />
 
       <p class="mb-2 text-lg">
-        Поделись ссылкой с друзьями и получи 20% с их дохода
+        Получай за каждого друга 20% с его дохода 
       </p>
       <div class="flex gap-4">
         <button
@@ -24,7 +24,7 @@
           @click="copy"
           class="text-white bg-[#ffffff1a] hover:bg-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-2xl text-sm w-full px-12 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
-          <span style="font-size: 12px">
+          <span style="font-size: 14px">
             {{ referalText }}
           </span>
         </button>
@@ -62,7 +62,7 @@
         </h3>
       </div>
       <div class="p-6 pt-0">
-        <span v-if="!friends.length"> У тебя еще нет друзей </span>
+        <span v-if="!friends.length"> У тебя еще нет друзей ༼ つ ಥ_ಥ ༽つ </span>
         <ul class="space-y-4" v-if="friends.length > 0">
           <li class="flex items-center space-x-4" v-for="friend in friends">
             <span
@@ -126,7 +126,7 @@ function copy() {
 </script>
 <style scoped>
 button {
-  background: linear-gradient(to top, #fe4495, #d5095f);
+  background: linear-gradient(to top, #474049, #e4bb07);
   box-shadow: 0 6px 3px -3px rgba(0, 0, 0, 0.75);
   text-shadow: 3px 2px 0 rgba(0, 0, 0, 0.3);
   font-weight: bold;

@@ -30,7 +30,7 @@
     <!-- Валюта и доходы -->
     <div class="header mt-2">
       <div class="flex">
-        <img src="../assets/valuta.png" alt="coin" class="valuta-icon" />
+        <img src="../assets/valuta1.png" alt="coin" class="valuta-icon" />
         <h2 class="score" id="score">{{ scoreStore.score }}</h2>
       </div>
       <div class="earnings flex gap-2">
