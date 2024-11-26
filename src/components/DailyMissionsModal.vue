@@ -1,6 +1,9 @@
 <template>
   <div class="modal-overlay" @click="close">
-    <div class="modal-content daily-modal-content relative" @click.stop>
+    <div
+      class="modal-content daily-modal-content relative flex flex-col items-center overflow-hidden"
+      @click.stop
+    >
       <button class="absolute top-1 right-2 text-2xl" @click="close">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -20,9 +23,9 @@
         </svg>
       </button>
       <h2>Заходи каждый день и забирай бонус!</h2>
-      <div class="missions-grid grid grid-cols-3 mt-4 gap-2">
+      <div class="missions-grid grid grid-cols-2 mt-2 gap-2">
         <button
-          v-for="day in 12"
+          v-for="day in 9"
           :key="day"
           :class="[
             'mission-button',
@@ -33,7 +36,7 @@
           :disabled="!canCollect(day)"
         >
           <span class="font-bold">
-            {{ loadingDay === day ? 'Получение...' : getButtonText(day) }}
+            {{ loadingDay === day ? "Получение..." : getButtonText(day) }}
           </span>
           <img
             src="https://cdn-icons-png.flaticon.com/512/5525/5525147.png"
@@ -47,7 +50,7 @@
           </span>
         </button>
       </div>
-      
+
       <!-- Временная кнопка сброса миссий (только для разработки) -->
       <button
         v-if="isDev"
@@ -75,14 +78,14 @@ const currentLevel = ref(1);
 const loadingDay = ref(null);
 
 // Проверка на режим разработки
-const isDev = import.meta.env.MODE === 'development';
+const isDev = import.meta.env.MODE === "development";
 
 onMounted(async () => {
   await userStore.loadUserData();
   currentLevel.value = userStore.dailyMissionLevel;
 
-  console.log('Daily Mission Level:', currentLevel.value);
-  console.log('Daily Mission Date:', userStore.dailyMissionDate);
+  console.log("Daily Mission Level:", currentLevel.value);
+  console.log("Daily Mission Date:", userStore.dailyMissionDate);
 });
 
 function close() {
@@ -105,7 +108,9 @@ function getReward(day) {
 
 function canCollect(day) {
   const today = new Date();
-  const lastCollectedDate = userStore.dailyMissionDate ? new Date(userStore.dailyMissionDate) : null;
+  const lastCollectedDate = userStore.dailyMissionDate
+    ? new Date(userStore.dailyMissionDate)
+    : null;
 
   let isTodayCollected = false;
 
@@ -116,11 +121,16 @@ function canCollect(day) {
       today.getDate() === lastCollectedDate.getDate();
   }
 
-  console.log('Today:', today.toISOString().split('T')[0]);
-  console.log('Last Collected Date:', lastCollectedDate ? lastCollectedDate.toISOString().split('T')[0] : 'null');
-  console.log('Is Today Collected:', isTodayCollected);
+  console.log("Today:", today.toISOString().split("T")[0]);
+  console.log(
+    "Last Collected Date:",
+    lastCollectedDate ? lastCollectedDate.toISOString().split("T")[0] : "null"
+  );
+  console.log("Is Today Collected:", isTodayCollected);
 
-  return day === currentLevel.value && !isTodayCollected && loadingDay.value !== day;
+  return (
+    day === currentLevel.value && !isTodayCollected && loadingDay.value !== day
+  );
 }
 
 async function collectReward(day) {
@@ -144,11 +154,13 @@ async function collectReward(day) {
 
     currentLevel.value = newLevel;
   } catch (error) {
-    console.error('Ошибка при получении награды:', error);
-    alert('Произошла ошибка при получении награды. Пожалуйста, попробуйте снова.');
+    console.error("Ошибка при получении награды:", error);
+    alert(
+      "Произошла ошибка при получении награды. Пожалуйста, попробуйте снова."
+    );
   } finally {
     loadingDay.value = null; // Сбрасываем состояние загрузки
-    console.log('Состояние загрузки сброшено');
+    console.log("Состояние загрузки сброшено");
   }
 }
 
@@ -156,7 +168,7 @@ async function collectReward(day) {
 async function resetMission() {
   await userStore.resetDailyMission();
   currentLevel.value = 1;
-  alert('Ежедневная миссия сброшена.');
+  alert("Ежедневная миссия сброшена.");
 }
 </script>
 
@@ -175,7 +187,12 @@ async function resetMission() {
 }
 
 .modal-content {
-  background-color: rgba(42, 41, 46, 0.9); /* Полупрозрачный фон, аналогичный меню */
+  background-color: rgba(
+    42,
+    41,
+    46,
+    0.9
+  ); /* Полупрозрачный фон, аналогичный меню */
   padding: 20px 30px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -203,7 +220,12 @@ async function resetMission() {
 }
 
 .menu-button:hover {
-  background-color: rgba(255, 255, 255, 0.25); /* Более яркий фон при наведении */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.25
+  ); /* Более яркий фон при наведении */
 }
 
 .close-button {
