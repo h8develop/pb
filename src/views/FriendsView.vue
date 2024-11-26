@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center flex-col p-4">
     <h1 class="text-center text-2xl font-extrabold dark:text-white mb-2">
-      GoldenBust Friends
+      Друзья
     </h1>
     <div class="rounded-2xl p-10 bg-[#2a292e4d] relative mt-20">
       <img
@@ -62,24 +62,19 @@
         </h3>
       </div>
       <div class="p-6 pt-0">
-        <span v-if="!friends.length"> У тебя еще нет друзей ༼ つ ಥ_ಥ ༽つ </span>
+        <span v-if="!friends.length"> У тебя еще нет друзей༼ つ ಥ_ಥ ༽つ </span>
         <ul class="space-y-4" v-if="friends.length > 0">
-          <li class="flex items-center space-x-4" v-for="friend in friends">
-            <span
-              class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
-            >
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/3781/3781973.png"
-                alt="avatar"
-              />
-            </span>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-white truncate">
-                {{ friend.id }}
-              </p>
-              <p class="text-sm text-white truncate">{{ friend.status }}</p>
-            </div>
-          </li>
+          <li class="flex items-center space-x-4" v-for="friend in friends" :key="friend.id">
+  <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
+    <img src="https://cdn-icons-png.flaticon.com/512/3781/3781973.png" alt="avatar" />
+  </span>
+  <div class="flex-1 min-w-0">
+    <p class="text-sm font-medium text-white truncate">
+      {{ friend.name }}
+    </p>
+  </div>
+</li>
+
         </ul>
       </div>
     </div>
@@ -126,7 +121,7 @@ function copy() {
 </script>
 <style scoped>
 button {
-  background: linear-gradient(to top, #474049, #e4bb07);
+  background: linear-gradient(to top, #cd28ff, #dab305);
   box-shadow: 0 6px 3px -3px rgba(0, 0, 0, 0.75);
   text-shadow: 3px 2px 0 rgba(0, 0, 0, 0.3);
   font-weight: bold;

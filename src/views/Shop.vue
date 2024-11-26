@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col p-4">
     <h1 class="text-center text-2xl font-extrabold dark:text-white mb-2">
-      GoldenBust Shop
+      Магазин улучшений 
     </h1>
 
     <div

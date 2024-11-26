@@ -1,17 +1,29 @@
-import { Telegraf, Markup } from 'telegraf'
+// bot/app.js
 
-const token = '8124471087:AAGp_FGoAR3D-jMtzpGKlEG_DDNGz4Y69vo'
-const webAppUrl = 'https://pbprojeck-87266.web.app'
+import { Telegraf, Markup } from 'telegraf';
+import dotenv from 'dotenv';
+import logger from '/logger.js';
 
-const bot = new Telegraf(token)
+dotenv.config();
+
+const token = process.env.BOT_TOKEN;
+if (!token) {
+  throw new Error('BOT_TOKEN не определён в переменных окружения.');
+}
+const webAppUrl = 'https://pbprojeck-87266.web.app';
+
+const bot = new Telegraf(token);
 
 bot.command('start', (ctx) => {
+  const ref = ctx.startPayload || 'unknown';
   ctx.reply(
-    'Hello! Press to start the app',
+    'Привет! Нажми, чтобы начать приложение',
     Markup.inlineKeyboard([
-      Markup.button.webApp('Open mini app', `${webAppUrl}?ref=${ctx.payload}`),
+      Markup.button.webApp('Открыть мини-приложение', `${webAppUrl}?ref=${ref}`),
     ])
-  )
-})
+  );
+});
 
-bot.launch()
+bot.launch();
+
+export default bot;
