@@ -10,20 +10,26 @@
       overflow-y: auto; /* Enable vertical scrolling */
     "
   >
-    <div class="">
+    <div class="" v-if="isMobile">
       <RouterView />
     </div>
+    <div v-else class="text-white flex items-center min-h-96">
+      <img src="@/assets/QR.png" alt="" />
+    </div>
   </main>
-  <TheMenu />
+  <TheMenu v-if="isMobile" />
 </template>
 
 <script setup>
+import { useDeviceCheck } from "./composables/useDeviceCheck";
 import { RouterView } from "vue-router";
 import TheMenu from "./components/TheMenu.vue";
 import { onMounted, ref } from "vue";
 import { useAppStore } from "@/stores/app";
 import { useTelegram } from "@/services/telegram";
 import { useScoreStore } from "@/stores/score";
+
+const { isMobile } = useDeviceCheck();
 const scoreStore = useScoreStore();
 scoreStore.loadUserData();
 
