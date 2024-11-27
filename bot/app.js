@@ -6,7 +6,7 @@ import logger from '/logger.js';
 
 dotenv.config();
 
-const token = process.env.BOT_TOKEN;
+const token = "8124471087:AAGp_FGoAR3D-jMtzpGKlEG_DDNGz4Y69vo"
 if (!token) {
   throw new Error('BOT_TOKEN не определён в переменных окружения.');
 }
