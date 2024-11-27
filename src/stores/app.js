@@ -17,21 +17,21 @@ export const useAppStore = defineStore('app', {
   actions: {
     async init(ref) {
       const { user: telegramUser } = useTelegram();
-
+    
       this.user = await getOrCreateUser();
-
+    
       const scoreStore = useScoreStore();
-
+    
       if (typeof scoreStore.setScore === 'function') {
         scoreStore.setScore(this.user.score);
         scoreStore.setUserId(this.user.id);
       } else {
         console.error('Ошибка: метод setScore не найден в scoreStore');
       }
-
+    
       // Если есть реферальный код и он не принадлежит самому пользователю
-      if (ref && +ref !== +this.user.telegram) {
-        await registerRef(telegramUser?.first_name ?? 'kto', ref);
+      if (ref && +ref !== + this.user.telegram) {
+        await registerRef(telegramUser.first_name, ref, this.user.id);
       }
     },
 

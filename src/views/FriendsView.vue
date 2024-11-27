@@ -90,28 +90,19 @@ const app = useAppStore();
 const { user } = useTelegram();
 
 const referalText = ref("Твоя персональная ссылка");
-const friends_mock = [
-  {
-    id: "gitam",
-    name: true,
-  },
-  {
-    id: "gitam",
-    name: true,
-  },
-];
 
-// Безопасная обработка данных друзей
+
 const friends = computed(() => {
   // Проверка на существование данных о пользователе и друзьях
   if (app.user && app.user.friends) {
-    return Object.keys(app.user.friends).map((id) => ({
-      id,
-      name: app.user.friends[id] || "Неизвестный друг", // Подстраховка на случай отсутствия имени
+    return Object.entries(app.user.friends).map(([userName, userId]) => ({
+      id: userId, // userId теперь является id
+      name: userName || "Неизвестный друг", // userName — это имя друга
     }));
   }
   return [];
 });
+
 
 function copy() {
   const userId = user?.id || "unknown";

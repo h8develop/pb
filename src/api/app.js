@@ -18,7 +18,7 @@ export async function getOrCreateUser() {
 
   const newUser = {
     telegram: telegramId,
-    friends: {},
+    friends: [],
     tasks: {},
     score: 0,
     energy: 1000,
