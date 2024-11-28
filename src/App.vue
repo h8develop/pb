@@ -35,21 +35,17 @@ scoreStore.loadUserData();
 
 const loaded = ref(false);
 const app = useAppStore();
-
 const { tg } = useTelegram();
 
-
-
 const urlParams = new URLSearchParams(window.location.search);
-const ref = urlParams.get("ref");
+const refParam = urlParams.get("ref");
 
-app.init(ref !== 'unknown' ? ref : null).then(() => {
+app.init(refParam !== 'unknown' ? refParam : null).then(() => {
   loaded.value = true;
 });
 
 onMounted(() => {
   tg.ready();
-
   tg.expand();
 });
 </script>
