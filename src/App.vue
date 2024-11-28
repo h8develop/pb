@@ -38,9 +38,12 @@ const app = useAppStore();
 
 const { tg } = useTelegram();
 
-const urlParams = new URLSearchParams(window.location.search);
 
-app.init(urlParams.get("ref")).then(() => {
+
+const urlParams = new URLSearchParams(window.location.search);
+const ref = urlParams.get("ref");
+
+app.init(ref !== 'unknown' ? ref : null).then(() => {
   loaded.value = true;
 });
 

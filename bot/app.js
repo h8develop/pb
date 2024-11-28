@@ -8,11 +8,15 @@ const webAppUrl = 'https://pbprojeck-87266.web.app';
 const bot = new Telegraf(token);
 
 bot.command('start', (ctx) => {
-  const ref = ctx.startPayload || 'unknown';
+  const ref = ctx.startPayload;
+  let webAppLink = webAppUrl;
+  if (ref && ref !== 'unknown') {
+    webAppLink += `?ref=${ref}`;
+  }
   ctx.reply(
     'Привет! Нажми, чтобы начать приложение',
     Markup.inlineKeyboard([
-      Markup.button.webApp('Открыть мини-приложение', `${webAppUrl}?ref=${ref}`),
+      Markup.button.webApp('Открыть мини-приложение', webAppLink),
     ])
   );
 });

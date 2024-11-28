@@ -105,8 +105,12 @@ const friends = computed(() => {
 
 
 function copy() {
-  const userId = user?.id || "unknown";
-  navigator.clipboard.writeText(`https://t.me/testikbt_bot?start=${userId}`);
+  const userId = user?.id;
+  if (!userId || userId === 'unknown') {
+    alert('Не удалось получить ваш Telegram ID. Пожалуйста, попробуйте позже.');
+    return;
+  }
+  navigator.clipboard.writeText(`https://t.me/your_bot?start=${userId}`);
   referalText.value = "Поделись!";
 }
 </script>
