@@ -1,6 +1,7 @@
 // src/api/users.js
+import supabase from '@/services/supabase.js';
 
-export async function registerRef(userName, refId, userId) {{
+export async function registerRef(userName, refId, userId) {
   if (!refId || refId === 'unknown') {
     console.error('Invalid refId:', refId);
     return;
@@ -42,5 +43,4 @@ export async function registerRef(userName, refId, userId) {{
   } catch (error) {
     console.error('Ошибка при регистрации реферала:', error.message);
   }
-}
 }

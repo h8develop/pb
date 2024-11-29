@@ -14,9 +14,9 @@ bot.command('start', (ctx) => {
     webAppLink += `?ref=${ref}`;
   }
   ctx.reply(
-    'Привет! Нажми, чтобы начать приложение',
+    webAppLink,
     Markup.inlineKeyboard([
-      Markup.button.webApp('Открыть мини-приложение', webAppLink),
+      Markup.button.webApp('ХУЙ', webAppLink),
     ])
   );
 });

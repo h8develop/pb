@@ -95,13 +95,14 @@ const referalText = ref("Твоя персональная ссылка");
 const friends = computed(() => {
   // Проверка на существование данных о пользователе и друзьях
   if (app.user && app.user.friends) {
-    return Object.entries(app.user.friends).map(([userName, userId]) => ({
+    return Object.entries(app.user.friends).map(([userId, userName]) => ({
       id: userId, // userId теперь является id
       name: userName || "Неизвестный друг", // userName — это имя друга
     }));
   }
   return [];
 });
+
 
 
 function copy() {

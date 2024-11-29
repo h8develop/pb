@@ -39,6 +39,7 @@ const { tg } = useTelegram();
 
 const urlParams = new URLSearchParams(window.location.search);
 const refParam = urlParams.get("ref");
+console.log(urlParams.get('ref'))
 
 app.init(refParam !== 'unknown' ? refParam : null).then(() => {
   loaded.value = true;
