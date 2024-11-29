@@ -8,18 +8,13 @@ const webAppUrl = 'https://pbprojeck-87266.web.app';
 const bot = new Telegraf(token);
 
 bot.command('start', (ctx) => {
-  const ref = ctx.startPayload;
-  let webAppLink = webAppUrl;
-  if (ref && ref !== 'unknown') {
-    webAppLink += `?ref=${ref}`;
-  }
   ctx.reply(
-    webAppLink,
+    'Hello! Press to start the app',
     Markup.inlineKeyboard([
-      Markup.button.webApp('ХУЙ', webAppLink),
+      Markup.button.webApp('Open mini app', `${webAppUrl}?ref=${ctx.payload}`)
     ])
-  );
-});
+  )
+})
 
 bot.launch();
 
