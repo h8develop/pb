@@ -1,13 +1,14 @@
 <template>
   <div class="flex flex-col p-4">
     <h1 class="text-center text-2xl font-extrabold dark:text-white mb-2">
-      Магазин улучшений 
+      Магазин улучшений
     </h1>
 
     <div
       v-for="item in shopItems"
       :key="item.id"
       class="p-2 shadow-md hover:shadow-lg rounded-2xl mb-2 flex justify-between items-center"
+      :class="{ 'opacity-50 cursor-not-allowed': isItemPurchased(item) }"
       style="background: rgba(42, 41, 46, 0.3)"
     >
       <div class="p-2 flex items-center gap-2">
@@ -30,7 +31,7 @@
         <button
           class="candy green inline-flex w-full py-1 px-2 cursor-pointer items-center justify-center bg-red-500 shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 text-white rounded-full"
           @click="buyItem(item)"
-          :disabled="!canBuyItem(item)"
+          :disabled="!canBuyItem(item) || isItemPurchased(item)"
         >
           <img
             src="https://cdn-icons-png.flaticon.com/512/272/272525.png"
@@ -51,8 +52,6 @@ import { ref } from "vue";
 import { useScoreStore } from "@/stores/score";
 import supabase from "@/services/supabase";
 
-
-const isButtonSelectionOpen = ref(false);
 const scoreStore = useScoreStore();
 
 // Описание доступных предметов
@@ -108,9 +107,14 @@ const shopItems = ref([
   },
 ]);
 
+// Проверка, куплен ли предмет
+function isItemPurchased(item) {
+  return scoreStore.purchasedItems[item.id] && item.id !== 1; // Исключение для батарейки
+}
+
 // Проверка на доступность покупки
 function canBuyItem(item) {
-  if (scoreStore.purchasedItems[item.id] && ![1, 3].includes(item.id)) {
+  if (scoreStore.purchasedItems[item.id] && item.id !== 1) {
     return false; // Уникальные предметы уже куплены
   }
   return scoreStore.score >= item.cost;
@@ -153,7 +157,7 @@ async function buyItem(item) {
     case "increaseMaxEnergyTo6000":
       if (scoreStore.maxEnergy < 6000) scoreStore.maxEnergy = 6000;
       break;
-      case "customButton":
+    case "customButton":
       scoreStore.hasCustomButton = true;
       break;
     case "increaseMultitap":
@@ -180,7 +184,7 @@ async function buyItem(item) {
       energy: scoreStore.energy,
       multitap_level: scoreStore.multitapLevel,
       has_golden_trinket: scoreStore.hasGoldenTrinket,
-      has_custom_button: scoreStore.hasCustomButton, // Добавлено
+      has_custom_button: scoreStore.hasCustomButton,
     })
     .eq("id", scoreStore.userId);
   if (error) {
@@ -194,14 +198,17 @@ async function buyItem(item) {
 </script>
 
 <style scoped>
-/* Добавлены стили для улучшенной визуализации */
-.shop-container {
-  padding: 20px;
-}
-
+/* Стили для купленных предметов */
 button:disabled {
   background-color: #7e7e7e;
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.opacity-50 {
+  opacity: 0.5;
+}
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 </style>

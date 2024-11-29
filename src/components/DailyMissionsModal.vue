@@ -44,10 +44,11 @@
             class="h-10 w-10"
           />
           <span
-            class="text-sm font-normal mt-1 py-0.5 px-4 bg-yellow-500 rounded-full"
-          >
-            {{ day * 1000 }}
-          </span>
+  class="text-sm font-normal mt-1 py-0.5 px-4 bg-yellow-500 rounded-full"
+>
+  {{ calculateReward(day) }}
+</span>
+
         </button>
       </div>
 
@@ -59,7 +60,9 @@
       >
         Сбросить миссию (DEV)
       </button>
+      
     </div>
+    
   </div>
 </template>
 
@@ -102,36 +105,32 @@ function getButtonText(day) {
   }
 }
 
-function getReward(day) {
-  return day * 1000; // Формула расчета награды за день
+function calculateReward(day) {
+  // Пример: разные награды для определенных дней
+  const rewardConfig = {
+    1: 1000,
+    2: 2000,
+    3: 3000,
+    4: 4000,
+    5: 8000,
+    6: 10000,
+    7: 12000,
+    8: 14000,
+    9: 16000,
+  };
+
+  return rewardConfig[day] || 0; // Возвращаем награду или 0, если день не найден
 }
+
 
 function canCollect(day) {
   const today = new Date();
-  const lastCollectedDate = userStore.dailyMissionDate
-    ? new Date(userStore.dailyMissionDate)
-    : null;
+  const isTodayCollected = userStore.dailyMissionDate
+    && new Date(userStore.dailyMissionDate).toDateString() === today.toDateString();
 
-  let isTodayCollected = false;
-
-  if (lastCollectedDate) {
-    isTodayCollected =
-      today.getFullYear() === lastCollectedDate.getFullYear() &&
-      today.getMonth() === lastCollectedDate.getMonth() &&
-      today.getDate() === lastCollectedDate.getDate();
-  }
-
-  console.log("Today:", today.toISOString().split("T")[0]);
-  console.log(
-    "Last Collected Date:",
-    lastCollectedDate ? lastCollectedDate.toISOString().split("T")[0] : "null"
-  );
-  console.log("Is Today Collected:", isTodayCollected);
-
-  return (
-    day === currentLevel.value && !isTodayCollected && loadingDay.value !== day
-  );
+  return day === currentLevel.value && !isTodayCollected;
 }
+
 
 async function collectReward(day) {
   if (!canCollect(day)) {
@@ -142,10 +141,11 @@ async function collectReward(day) {
   loadingDay.value = day; // Устанавливаем состояние загрузки
   console.log(`Сбор награды за день ${day}`);
 
-  const reward = getReward(day);
+  const reward = calculateReward(day); // Вызов функции для расчета награды
 
   try {
     await scoreStore.addScore(reward);
+    showRewardAnimation(day, reward);
     console.log(`Награда ${reward} успешно добавлена`);
 
     const newLevel = currentLevel.value + 1;
@@ -163,6 +163,10 @@ async function collectReward(day) {
     console.log("Состояние загрузки сброшено");
   }
 }
+function showRewardAnimation(day, reward) {
+  alert(`Возрадуйся злотыми в размере ${reward} коинов!`);
+}
+
 
 // Временная функция для сброса миссии
 async function resetMission() {

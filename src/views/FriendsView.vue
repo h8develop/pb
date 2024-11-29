@@ -16,7 +16,7 @@
       />
 
       <p class="mb-2 text-lg">
-        Получай за каждого друга 20% с его дохода 
+       Нажимаем-получаем: 5000 коинов для себя и друга
       </p>
       <div class="flex gap-4">
         <button
@@ -66,7 +66,7 @@
         <ul class="space-y-4" v-if="friends.length > 0">
           <li class="flex items-center space-x-4" v-for="friend in friends" :key="friend.id">
   <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full">
-    <img src="https://cdn-icons-png.flaticon.com/512/3781/3781973.png" alt="avatar" />
+    <img src="https://ggheaven.com/wp-content/uploads/2021/11/3-2034x2048.png" alt="avatar" />
   </span>
   <div class="flex-1 min-w-0">
     <p class="text-sm font-medium text-white truncate">
