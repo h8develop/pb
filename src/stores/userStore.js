@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import supabase from '@/services/supabase';
 import { useTelegram } from '@/services/telegram';
+import { differenceInCalendarDays } from 'date-fns';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -41,10 +42,8 @@ export const useUserStore = defineStore('user', {
       let shouldReset = false;
 
       if (lastCollectedDate) {
-        shouldReset =
-          today.getFullYear() > lastCollectedDate.getFullYear() ||
-          today.getMonth() > lastCollectedDate.getMonth() ||
-          today.getDate() > lastCollectedDate.getDate();
+        const difference = differenceInCalendarDays(today, lastCollectedDate);
+        shouldReset = difference > 1; // Если прошло больше 1 календарного дня
       }
 
       if (shouldReset) {
@@ -72,7 +71,7 @@ export const useUserStore = defineStore('user', {
         } else {
           this.dailyMissionLevel = 1;
           this.dailyMissionDate = null;
-          console.log('Ежедневная миссия успешно сброшена.');
+          console.log('Ежедневная миссия успешно сброшена.'); 
         }
       } catch (err) {
         console.error('Ошибка сброса ежедневной миссии:', err);
