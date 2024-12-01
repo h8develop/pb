@@ -2,7 +2,7 @@
 
 import { Telegraf, Markup } from 'telegraf';
 
-const token = import.meta.env.VITE_TOKEN;
+const token = "7664874670:AAGuBIo86w4AXw4DzNtoy7mOISEQo91n5xQ";
 
 if (!token) {
   throw new Error("Токен Telegram обязателен.");
@@ -10,7 +10,7 @@ if (!token) {
 
 // Используйте токен в вашем коде
 
-const webAppUrl = import.meta.env.VITE_WEB_APP_URL;
+const webAppUrl = "https://pbprojeck-87266.web.app";
 if (!webAppUrl) {
   throw new Error("webAppUrl обязателен.");
 }
