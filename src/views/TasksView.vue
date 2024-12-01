@@ -66,6 +66,7 @@
 <script setup>
 import { useTelegram } from "@/services/telegram";
 import { useAppStore } from "@/stores/app";
+import { is_subscribed } from "@/api/app"; // Импортируем is_subscribed
 import { onMounted } from "vue";
 
 const { tg } = useTelegram();
@@ -76,14 +77,38 @@ onMounted(() => {
 });
 
 async function openTask(task) {
-  await app.completeTask(task);
-  if (task.url.includes("t.me")) {
-    tg.openTelegramLink(task.url);
+  if (task.channel_id != null) {
+    const subscribed = await is_subscribed(task.channel_id, app.user.telegram);
+    
+    if (subscribed) {
+      await app.completeTask(task);
+    }
+    else{
+      if (task.url.includes("t.me")) {
+        tg.openTelegramLink(task.url);
+      } else {
+        tg.openLink(task.url);
+      }
+      return;
+    }
+
+    if (subscribed == null) {
+      alert('Не удалось проверить подписку. Пожалуйста, попробуйте позже.');
+      return;
+    }
+
+    alert('Задание выполнено!');
   } else {
-    tg.openLink(task.url);
+    if (task.url.includes("t.me")) {
+        tg.openTelegramLink(task.url);
+      } else {
+        tg.openLink(task.url);
+      }
+    await app.completeTask(task);
   }
 }
 </script>
+
 
 <style scoped>
 /* Оформление блока задач с полупрозрачным фоном */

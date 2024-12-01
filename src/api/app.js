@@ -85,3 +85,23 @@ export async function completeTask(user, task) {
     console.error('Ошибка при выполнении задачи:', err);
   }
 }
+
+export async function is_subscribed(channel_id, telegram_id) {
+  const botToken = "8124471087:AAGp_FGoAR3D-jMtzpGKlEG_DDNGz4Y69vo"; // Telegram Bot Token
+  const url = `https://api.telegram.org/bot${botToken}/getChatMember?chat_id=${channel_id}&user_id=${telegram_id}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.ok && data.result) {
+      const status = data.result.status;
+      return status === 'member' || status === 'administrator' || status === 'creator';
+    }
+
+    return false;
+  } catch (error) {
+    console.error('Error checking subscription status:', error);
+    return null; // Возвращаем null, чтобы обработать ошибку
+  }
+}
