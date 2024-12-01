@@ -10,11 +10,11 @@ export const useScoreStore = defineStore('score', {
     maxEnergy: 1000,
     multitapLevel: 0,
     hasGoldenTrinket: false,
-    hasCustomButton: false, // Новое свойство
+    hasCustomButton: false,
     lastEnergyUpdate: null,
+    lastIncomeUpdate: null, // Для пассивного заработка
     purchasedItems: {},
   }),
-
 
   actions: {
     setUserId(id) {
@@ -35,12 +35,12 @@ export const useScoreStore = defineStore('score', {
       const telegramId = Number(user.id);
       try {
         const { data, error } = await supabase
-        .from('users')
-        .select(
-          'id, score, energy, max_energy, multitap_level, has_golden_trinket, has_custom_button, last_energy_update, purchased_items'
-        )
-        .eq('telegram', telegramId)
-        .single();
+          .from('users')
+          .select(
+            'id, score, energy, max_energy, multitap_level, has_golden_trinket, has_custom_button, last_energy_update, last_income_update, purchased_items'
+          )
+          .eq('telegram', telegramId)
+          .single();
 
         if (error) {
           console.error('Ошибка при загрузке данных пользователя из Supabase:', error);
@@ -53,10 +53,12 @@ export const useScoreStore = defineStore('score', {
           this.hasCustomButton = data.has_custom_button ?? false;
           this.hasGoldenTrinket = data.has_golden_trinket ?? false;
           this.lastEnergyUpdate = data.last_energy_update
-          
             ? new Date(data.last_energy_update)
             : new Date();
-          this.purchasedItems = data.purchased_items || {}; // Загружаем купленные предметы
+          this.lastIncomeUpdate = data.last_income_update
+            ? new Date(data.last_income_update)
+            : new Date();
+          this.purchasedItems = data.purchased_items || {};
         }
       } catch (err) {
         console.error('Ошибка при загрузке данных пользователя:', err);
@@ -82,8 +84,33 @@ export const useScoreStore = defineStore('score', {
       }
     },
 
+    async restorePassiveIncome() {
+      if (!this.hasGoldenTrinket) return; // Если золотого брелока нет, выходим
+
+      const currentTime = new Date();
+      const elapsedHours = Math.floor((currentTime - new Date(this.lastIncomeUpdate)) / (1000 * 60 * 60));
+
+      if (elapsedHours > 0) {
+        const incomeToAdd = elapsedHours * 100; // 100 монет в час
+        this.score += incomeToAdd;
+        this.lastIncomeUpdate = currentTime.toISOString();
+
+        await supabase
+          .from('users')
+          .update({
+            score: this.score,
+            last_income_update: this.lastIncomeUpdate,
+          })
+          .eq('id', this.userId);
+      }
+    },
+
     async add(taps = 1) {
+      // Восстановление энергии
       await this.restoreEnergy();
+
+      // Восстановление пассивного дохода
+      await this.restorePassiveIncome();
 
       const coinsPerTap = this.multitapLevel > 0 ? this.multitapLevel + 1 : 1;
 
@@ -104,11 +131,9 @@ export const useScoreStore = defineStore('score', {
       }
     },
 
-    // Новый метод для добавления очков без уменьшения энергии
     async addScore(amount) {
       this.score += amount;
 
-      // Обновляем данные в Supabase
       await supabase
         .from('users')
         .update({
@@ -152,7 +177,7 @@ export const useScoreStore = defineStore('score', {
 
     async updateScoreInSupabase() {
       if (!this.userId) return;
-    
+
       try {
         const { error } = await supabase
           .from('users')
@@ -162,13 +187,12 @@ export const useScoreStore = defineStore('score', {
             energy: this.energy,
             multitap_level: this.multitapLevel,
             has_golden_trinket: this.hasGoldenTrinket,
-            has_custom_button: this.hasCustomButton, // Добавлено
-            last_energy_update: this.lastEnergyUpdate
-              ? this.lastEnergyUpdate.toISOString()
-              : null,
+            has_custom_button: this.hasCustomButton,
+            last_energy_update: this.lastEnergyUpdate ? this.lastEnergyUpdate.toISOString() : null,
+            last_income_update: this.lastIncomeUpdate ? this.lastIncomeUpdate.toISOString() : null,
           })
           .eq('id', this.userId);
-    
+
         if (error) {
           console.error('Ошибка при обновлении счёта в Supabase:', error);
         }

@@ -2,9 +2,18 @@
 
 import { Telegraf, Markup } from 'telegraf';
 
-const token = "8124471087:AAGp_FGoAR3D-jMtzpGKlEG_DDNGz4Y69vo"
-const webAppUrl = 'https://pbprojeck-87266.web.app';
+const token = import.meta.env.VITE_TOKEN;
 
+if (!token) {
+  throw new Error("Токен Telegram обязателен.");
+}
+
+// Используйте токен в вашем коде
+
+const webAppUrl = import.meta.env.VITE_WEB_APP_URL;
+if (!webAppUrl) {
+  throw new Error("webAppUrl обязателен.");
+}
 const bot = new Telegraf(token);
 
 bot.command('start', (ctx) => {

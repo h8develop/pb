@@ -4,7 +4,7 @@
     <!-- Верхняя панель с названием бота, профилем и кнопкой "О токене" -->
     <div class="flex gap-4 justify-between items-center mb-4">
       <div
-        class="rounded-full flex flex-col items-center bg-[#2a292e] py-0.5 pr-2.5 pl-1.5 border border-transparent text-sm text-white transition-all shadow-sm"
+        class="rounded-full flex flex-col items-center  py-0.5 pr-2.5 pl-1.5 border border-transparent text-sm text-white transition-all shadow-sm"
       >
         <div>
           <img
@@ -19,7 +19,8 @@
       </div>
       <h1 class="bot-title">GoldenBust</h1>
       <div
-        class="max-w-full leading-none font-normal m-1 px-2 py-2 rounded-full bg-[#2a292e] text-xs text-white"
+      class="max-w-full leading-none font-normal m-1 px-2 py-2 rounded-full bg-gradient-to-r from-[rgba(50,70,178,0.5)] to-[rgba(42,41,46,0.8)] text-xs text-white"
+
         role="button"
         @click="openTokenModal"
       >
@@ -60,7 +61,7 @@
       id="circle"
       :src="clickButtonImage"
       alt="Click Target"
-      :class="{ 'disabled': scoreStore.energy === 0 }"
+
       :style="{ cursor: scoreStore.energy > 0 ? 'pointer' : 'not-allowed' }"
     />
   </div>

@@ -87,7 +87,7 @@ export async function completeTask(user, task) {
 }
 
 export async function is_subscribed(channel_id, telegram_id) {
-  const botToken = "8124471087:AAGp_FGoAR3D-jMtzpGKlEG_DDNGz4Y69vo"; // Telegram Bot Token
+  const botToken = "7664874670:AAGuBIo86w4AXw4DzNtoy7mOISEQo91n5xQ"; // Telegram Bot Token
   const url = `https://api.telegram.org/bot${botToken}/getChatMember?chat_id=${channel_id}&user_id=${telegram_id}`;
 
   try {
