@@ -74,14 +74,14 @@ const shopItems = ref([
     id: 5,
     name: "Электрощиток",
     description: "Увеличь максимальную энергию до 4000",
-    cost: 20000,
+    cost: 35000,
     action: "increaseMaxEnergyTo4000",
   },
   {
     id: 6,
     name: "Энергостанция",
     description: "Увеличь максимальную энергию до 6000",
-    cost: 45000,
+    cost: 70000,
     action: "increaseMaxEnergyTo6000",
   },
   {

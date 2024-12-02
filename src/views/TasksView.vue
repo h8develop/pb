@@ -15,7 +15,7 @@
     >
       <div class="p-2 flex items-center gap-2">
         <img
-          src="https://icon-library.com/images/gifts-icon/gifts-icon-3.jpg"
+          src="/src/assets/ms.png"
           alt=""
           class="w-8 h-8 rounded-md"
         />

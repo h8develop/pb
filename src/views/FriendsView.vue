@@ -111,7 +111,7 @@ function copy() {
     alert('Не удалось получить ваш Telegram ID. Пожалуйста, попробуйте позже.');
     return;
   }
-  navigator.clipboard.writeText(`https://t.me/testikbt_bot?start=${userId}`);
+  navigator.clipboard.writeText(`https://t.me/GoldenBustBot?start=${userId}`);
   referalText.value = "Поделись!";
 }
 </script>

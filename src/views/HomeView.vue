@@ -19,7 +19,7 @@
       </div>
       <h1 class="bot-title">GoldenBust</h1>
       <div
-      class="max-w-full leading-none font-normal m-1 px-2 py-2 rounded-full bg-gradient-to-r from-[rgba(50,70,178,0.5)] to-[rgba(42,41,46,0.8)] text-xs text-white"
+      class="max-w-full leading-none font-normal m-1 px-2 py-2 rounded-full bg-[linear-gradient(to_top,#cd28ff,#dab305)] text-xs text-white"
 
         role="button"
         @click="openTokenModal"

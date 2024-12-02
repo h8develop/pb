@@ -1,6 +1,34 @@
+// src/stores/score.js
+
 import { defineStore } from 'pinia';
 import supabase from '@/services/supabase';
 import { useTelegram } from '@/services/telegram';
+import debounce from 'lodash.debounce';
+
+// Определяем функцию для обновления счёта в базе данных
+async function updateScoreInDatabase(userId, score, energy, lastEnergyUpdate) {
+  if (!userId) return;
+
+  try {
+    const { error } = await supabase
+      .from('users')
+      .update({
+        score: score,
+        energy: energy,
+        last_energy_update: lastEnergyUpdate,
+      })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Ошибка при обновлении счёта в Supabase:', error);
+    }
+  } catch (err) {
+    console.error('Ошибка при обновлении счёта в Supabase:', err);
+  }
+}
+
+// Создаём дебаунсированную версию функции
+const debouncedUpdateScore = debounce(updateScoreInDatabase, 800);
 
 export const useScoreStore = defineStore('score', {
   state: () => ({
@@ -23,12 +51,19 @@ export const useScoreStore = defineStore('score', {
 
     setScore(newScore) {
       this.score = newScore;
+      // Вызываем дебаунсированную функцию для обновления счёта в базе данных
+      debouncedUpdateScore(
+        this.userId,
+        this.score,
+        this.energy,
+        this.lastEnergyUpdate
+      );
     },
 
     async loadUserData() {
       const { user } = useTelegram();
       if (!user || !user.id) {
-        console.error("Ошибка: объект user или его id не определены");
+        console.error('Ошибка: объект user или его id не определены');
         return;
       }
 
@@ -43,7 +78,10 @@ export const useScoreStore = defineStore('score', {
           .single();
 
         if (error) {
-          console.error('Ошибка при загрузке данных пользователя из Supabase:', error);
+          console.error(
+            'Ошибка при загрузке данных пользователя из Supabase:',
+            error
+          );
         } else {
           this.userId = data.id;
           this.score = data.score ?? 0;
@@ -67,10 +105,15 @@ export const useScoreStore = defineStore('score', {
 
     async restoreEnergy() {
       const currentTime = new Date();
-      const elapsedMinutes = Math.floor((currentTime - new Date(this.lastEnergyUpdate)) / (1000 * 60));
+      const elapsedMinutes = Math.floor(
+        (currentTime - new Date(this.lastEnergyUpdate)) / (1000 * 60)
+      );
 
       if (elapsedMinutes > 0) {
-        const energyToAdd = Math.min(elapsedMinutes, this.maxEnergy - this.energy);
+        const energyToAdd = Math.min(
+          elapsedMinutes,
+          this.maxEnergy - this.energy
+        );
         this.energy = Math.min(this.energy + energyToAdd, this.maxEnergy);
         this.lastEnergyUpdate = currentTime.toISOString();
 
@@ -88,7 +131,9 @@ export const useScoreStore = defineStore('score', {
       if (!this.hasGoldenTrinket) return; // Если золотого брелока нет, выходим
 
       const currentTime = new Date();
-      const elapsedHours = Math.floor((currentTime - new Date(this.lastIncomeUpdate)) / (1000 * 60 * 60));
+      const elapsedHours = Math.floor(
+        (currentTime - new Date(this.lastIncomeUpdate)) / (1000 * 60 * 60)
+      );
 
       if (elapsedHours > 0) {
         const incomeToAdd = elapsedHours * 100; // 100 монет в час
@@ -112,20 +157,21 @@ export const useScoreStore = defineStore('score', {
       // Восстановление пассивного дохода
       await this.restorePassiveIncome();
 
-      const coinsPerTap = this.multitapLevel > 0 ? this.multitapLevel + 1 : 1;
+      const coinsPerTap =
+        this.multitapLevel > 0 ? this.multitapLevel + 1 : 1;
 
       if (this.energy >= taps) {
         this.score += taps * coinsPerTap;
         this.energy -= taps;
+        this.lastEnergyUpdate = new Date().toISOString();
 
-        await supabase
-          .from('users')
-          .update({
-            score: this.score,
-            energy: this.energy,
-            last_energy_update: this.lastEnergyUpdate,
-          })
-          .eq('id', this.userId);
+        // Вызываем дебаунсированную функцию для обновления счёта в базе данных
+        debouncedUpdateScore(
+          this.userId,
+          this.score,
+          this.energy,
+          this.lastEnergyUpdate
+        );
       } else {
         alert('У вас недостаточно энергии!');
       }
@@ -134,12 +180,13 @@ export const useScoreStore = defineStore('score', {
     async addScore(amount) {
       this.score += amount;
 
-      await supabase
-        .from('users')
-        .update({
-          score: this.score,
-        })
-        .eq('id', this.userId);
+      // Вызываем дебаунсированную функцию для обновления счёта в базе данных
+      debouncedUpdateScore(
+        this.userId,
+        this.score,
+        this.energy,
+        this.lastEnergyUpdate
+      );
     },
 
     async updatePurchasedItems(newItemId) {
@@ -158,7 +205,10 @@ export const useScoreStore = defineStore('score', {
         }
 
         const currentPurchasedItems = data.purchased_items || {};
-        const updatedPurchasedItems = { ...currentPurchasedItems, [newItemId]: true };
+        const updatedPurchasedItems = {
+          ...currentPurchasedItems,
+          [newItemId]: true,
+        };
 
         const { updateError } = await supabase
           .from('users')
@@ -166,9 +216,15 @@ export const useScoreStore = defineStore('score', {
           .eq('id', this.userId);
 
         if (updateError) {
-          console.error('Ошибка при обновлении purchased_items:', updateError);
+          console.error(
+            'Ошибка при обновлении purchased_items:',
+            updateError
+          );
         } else {
-          console.log('purchased_items успешно обновлено:', updatedPurchasedItems);
+          console.log(
+            'purchased_items успешно обновлено:',
+            updatedPurchasedItems
+          );
         }
       } catch (err) {
         console.error('Ошибка при обновлении purchased_items:', err);
@@ -176,29 +232,7 @@ export const useScoreStore = defineStore('score', {
     },
 
     async updateScoreInSupabase() {
-      if (!this.userId) return;
-
-      try {
-        const { error } = await supabase
-          .from('users')
-          .update({
-            score: this.score,
-            max_energy: this.maxEnergy,
-            energy: this.energy,
-            multitap_level: this.multitapLevel,
-            has_golden_trinket: this.hasGoldenTrinket,
-            has_custom_button: this.hasCustomButton,
-            last_energy_update: this.lastEnergyUpdate ? this.lastEnergyUpdate.toISOString() : null,
-            last_income_update: this.lastIncomeUpdate ? this.lastIncomeUpdate.toISOString() : null,
-          })
-          .eq('id', this.userId);
-
-        if (error) {
-          console.error('Ошибка при обновлении счёта в Supabase:', error);
-        }
-      } catch (err) {
-        console.error('Ошибка при обновлении счёта в Supabase:', err);
-      }
+      // Этот метод можно оставить пустым или использовать для других целей
     },
   },
 });
