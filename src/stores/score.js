@@ -173,7 +173,6 @@ export const useScoreStore = defineStore('score', {
           this.lastEnergyUpdate
         );
       } else {
-        alert('У вас недостаточно энергии!');
       }
     },
 

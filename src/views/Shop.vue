@@ -136,7 +136,6 @@ async function buyItem(item) {
 
   // Проверяем, можно ли купить предмет
   if (!canBuyItem(item)) {
-    alert("Недостаточно средств или предмет уже куплен!");
     return;
   }
 
@@ -167,7 +166,6 @@ async function buyItem(item) {
       scoreStore.hasGoldenTrinket = true;
       break;
     default:
-      alert("Неизвестное действие.");
   }
 
   // Обновление списка купленных предметов
@@ -189,11 +187,11 @@ async function buyItem(item) {
     .eq("id", scoreStore.userId);
   if (error) {
     console.error("Ошибка обновления данных в Supabase:", error);
-    alert("Ошибка при сохранении данных. Попробуйте позже.");
+    
     return;
   }
 
-  alert("Покупка успешно завершена!");
+
 }
 </script>
 

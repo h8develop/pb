@@ -155,16 +155,12 @@ async function collectReward(day) {
     currentLevel.value = newLevel;
   } catch (error) {
     console.error("Ошибка при получении награды:", error);
-    alert(
-      "Произошла ошибка при получении награды. Пожалуйста, попробуйте снова."
-    );
   } finally {
     loadingDay.value = null; // Сбрасываем состояние загрузки
     console.log("Состояние загрузки сброшено");
   }
 }
 function showRewardAnimation(day, reward) {
-  alert(`Возрадуйся злотыми в размере ${reward} коинов!`);
 }
 
 
@@ -172,7 +168,6 @@ function showRewardAnimation(day, reward) {
 async function resetMission() {
   await userStore.resetDailyMission();
   currentLevel.value = 1;
-  alert("Ежедневная миссия сброшена.");
 }
 </script>
 

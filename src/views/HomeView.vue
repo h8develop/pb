@@ -83,7 +83,7 @@
       <!-- Контейнер для конкурса -->
       <div class="contest-container cursor-pointer" @click="goToDailyMissions">
         <img
-          src="https://phones.mintmobile.com/wp-content/uploads/2024/09/Apple_iPhone_16_Pro_black_titanium_front_back1.png"
+          src="/src/assets/iphoneKONKURS1.png"
           alt="Конкурс"
           class="contest-image"
         />
@@ -112,8 +112,12 @@
       <div class="modal-content" @click.stop>
         <h2>О токене</h2>
         <p>
-          Здесь можно разместить информацию о токене, его особенности и другие
-          важные детали.
+          ✨Golden Bust – это уникальная платформа, где вы превращаете простые действия в реальные награды! 💰
+Выполняйте интересные задания, подписывайтесь на каналы и зарабатывайте золото, которое можно использовать для участия в розыгрышах крутых призов. 🎁
+
+📢 Ваши действия - Ваши награды🚀
+
+
         </p>
         <button class="menu-button close-button" @click="closeTokenModal">
           Закрыть
@@ -175,7 +179,7 @@ function openDailyMissions() {
   isDailyModalOpen.value = true;
 }
 function goToDailyMissions() {
-  window.open("https://t.me/testimGOLD/2", "_blank");
+  window.open("https://t.me/GOLDENBUST_CHANNEL/6", "_blank");
 }
 
 

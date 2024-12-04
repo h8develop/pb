@@ -108,7 +108,7 @@ const friends = computed(() => {
 function copy() {
   const userId = user?.id;
   if (!userId || userId === 'unknown') {
-    alert('Не удалось получить ваш Telegram ID. Пожалуйста, попробуйте позже.');
+
     return;
   }
   navigator.clipboard.writeText(`https://t.me/GoldenBustBot?start=${userId}`);

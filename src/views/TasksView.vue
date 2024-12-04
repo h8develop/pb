@@ -93,11 +93,11 @@ async function openTask(task) {
     }
 
     if (subscribed == null) {
-      alert('Не удалось проверить подписку. Пожалуйста, попробуйте позже.');
+     
       return;
     }
 
-    alert('Задание выполнено!');
+
   } else {
     if (task.url.includes("t.me")) {
         tg.openTelegramLink(task.url);
